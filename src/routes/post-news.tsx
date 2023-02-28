@@ -75,7 +75,7 @@ export default function PostNews() {
     <Stack
       spacing={8}
       mx={'auto'}
-      w={'100%'}
+      w={['fit-content', 'fit-content', 'lg']}
       py={12}
       px={6}
     >
