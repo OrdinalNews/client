@@ -8,7 +8,7 @@ export default function Root404() {
       <Heading>404 - not found!</Heading>
       <Text>We couldn't find that page.</Text>
       <Text>
-        Please try a different page or <Link to="/">go home.</Link>
+        Please try a different page or <Link to="/">click this link to return home.</Link>
       </Text>
       <Text>Current location: {location.pathname}</Text>
     </Container>
