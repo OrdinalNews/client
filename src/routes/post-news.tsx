@@ -7,6 +7,7 @@ import {
   Heading,
   Icon,
   Input,
+  Link as ChakraLink,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -64,6 +65,7 @@ export default function PostNews() {
         status: 'error',
         duration: 5000,
         isClosable: true,
+        variant: 'left-accent',
       });
       return;
     }
@@ -121,7 +123,7 @@ export default function PostNews() {
             <FormLabel>URL</FormLabel>
             <Input
               type="text"
-              placeholder="Optional: add a link"
+              placeholder="Add a link (optional)"
               onChange={e => setUrl(e.target.value)}
             />
           </FormControl>
@@ -129,7 +131,7 @@ export default function PostNews() {
             <FormLabel>Body</FormLabel>
             <Textarea
               resize="vertical"
-              placeholder="Plain text or markdown"
+              placeholder="Plain text or markdown (optional)"
               onChange={e => setBody(e.target.value)}
             />
           </FormControl>
@@ -171,12 +173,25 @@ export default function PostNews() {
               children={finalPost}
             ></Code>
             <Text>
-              You can upload an inscription using ord or through a service like Gamma and
-              OrdinalsBot.
+              You can upload an inscription using ord or through a service like{' '}
+              <ChakraLink
+                href="https://gamma.io/ordinals"
+                isExternal
+              >
+                Gamma
+              </ChakraLink>{' '}
+              and{' '}
+              <ChakraLink
+                href="https://ordinalsbot.com/"
+                isExternal
+              >
+                OrdinalsBot
+              </ChakraLink>
+              .
             </Text>
             <br />
             <Text>
-              Use the "plain text" inscription type if you're using Gamma, or make sure the file's
+              Use the "plain text" inscription type if you're using Gamma , or make sure the file's
               type is `.txt` if using the Ordinals CLI.
             </Text>
           </ModalBody>

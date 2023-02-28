@@ -14,11 +14,11 @@
 
 a {
   font-weight: 500;
-  color: #1eaab4;
+  color: #1eaab4 !important;
   text-decoration: inherit;
 }
 a:hover {
-  color: #1eaab4;
+  color: #2ad0db !important;
 }
 
 body {
@@ -59,7 +59,6 @@ button:focus-visible {
 
 .chakra-link {
   text-decoration: none;
-  color: #2ad0db;
 }
 
 .chakra-link:hover {

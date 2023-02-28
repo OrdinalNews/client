@@ -15,13 +15,13 @@ export default function RootIndex() {
       <Text>Setting the standard for inscribing news on Bitcoin.</Text>
       <br />
       <Text>
+        <Link to="/post-news">Inscribe the News</Link> |{' '}
         <ChakraLink
           href="https://docs.inscribe.news"
           isExternal
         >
-          Read the Documentation
-        </ChakraLink>{' '}
-        | <Link to="/post-news">Inscribe the News</Link>
+          Read the Docs
+        </ChakraLink>
       </Text>
     </Box>
   );
