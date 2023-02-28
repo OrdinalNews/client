@@ -1,10 +1,11 @@
 import { ChakraProvider } from '@chakra-ui/react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import './App.css';
-import './index.css';
+import './style/App.css';
+import './style/index.css';
 import PostNews from './routes/post-news';
 import Root404 from './routes/root-404';
 import RootIndex from './routes/root-index';
+import theme from './style/theme';
 
 const router = createBrowserRouter([
   {
@@ -20,7 +21,7 @@ const router = createBrowserRouter([
 
 export default function App() {
   return (
-    <ChakraProvider>
+    <ChakraProvider theme={theme}>
       <RouterProvider router={router} />
     </ChakraProvider>
   );
