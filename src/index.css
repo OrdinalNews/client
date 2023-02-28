@@ -3,7 +3,7 @@
   font-size: 18px;
   line-height: 24px;
   font-weight: 400;
-  color: #2AD0DB;
+  color: #2ad0db;
   background-color: #000;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -18,7 +18,7 @@ a {
   text-decoration: inherit;
 }
 a:hover {
-  color: #2A77DB;
+  color: #2a77db;
 }
 
 body {
@@ -46,7 +46,7 @@ button {
   transition: border-color 0.25s;
 }
 button:hover {
-  border-color: #2A77DB;
+  border-color: #2a77db;
 }
 button:focus,
 button:focus-visible {
@@ -54,12 +54,12 @@ button:focus-visible {
 }
 
 .chakra-heading {
-  color: #2AD0DB;
+  color: #2ad0db;
 }
 
 .chakra-link {
   text-decoration: none;
-  color: #2AD0DB;
+  color: #2ad0db;
 }
 
 .chakra-link:hover {
