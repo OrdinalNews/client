@@ -18,7 +18,7 @@ a {
   text-decoration: inherit;
 }
 a:hover {
-  color: #2a77db;
+  color: #1eaab4;
 }
 
 body {
@@ -46,7 +46,7 @@ button {
   transition: border-color 0.25s;
 }
 button:hover {
-  border-color: #2a77db;
+  border-color: #1eaab4;
 }
 button:focus,
 button:focus-visible {
@@ -65,3 +65,8 @@ button:focus-visible {
 .chakra-link:hover {
   text-decoration: none !important;
 }
+
+/*
+bright: #1eaab4
+muted: #2ad0db
+*/

@@ -1,26 +1,27 @@
-import { Box, Heading, ListItem, Text, UnorderedList, Link as ChakraLink } from '@chakra-ui/react';
+import { Box, Heading, Text, Link as ChakraLink, Image } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
+
 export default function RootIndex() {
   return (
     <Box borderRadius="xl">
-      <Heading>Welcome!</Heading>
+      <Image
+        boxSize="150px"
+        margin="0 auto"
+        src="/ordinal-news-logo.png"
+        alt="Ordinal News Logo"
+      />
+      <Heading>Ordinal News Standard</Heading>
 
-      <Text>Cool stuff coming soon.</Text>
-      <br />
-      <br />
-      <ChakraLink
-        href="https://docs.inscribe.news"
-        isExternal
-      >
-        Read the Documentation
-      </ChakraLink>
-      <br />
-      <br />
-      <Link to="/post">Inscribe the News</Link>
-      <br />
+      <Text>Setting the standard for inscribing news on Bitcoin.</Text>
       <br />
       <Text>
-        Read the News <Text as={'i'}>(coming soon)</Text>
+        <ChakraLink
+          href="https://docs.inscribe.news"
+          isExternal
+        >
+          Read the Documentation
+        </ChakraLink>{' '}
+        | <Link to="/post-news">Inscribe the News</Link>
       </Text>
     </Box>
   );
