@@ -1,31 +1,29 @@
 import {
   Box,
   Button,
+  Code,
   FormControl,
   FormLabel,
   Heading,
   Icon,
   Input,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Stack,
   Text,
   Textarea,
   useColorModeValue,
+  useControllableState,
+  useDisclosure,
   useToast,
 } from '@chakra-ui/react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-
-const toast = useToast();
-
-const generatePost = () => {
-  console.log('click');
-  toast({
-    title: 'Click Click',
-    description: 'Coming soon!',
-    status: 'info',
-    duration: 5000,
-    isClosable: true,
-  });
-};
 
 // credit for the bitcoin icon
 // https://commons.wikimedia.org/wiki/File:Bitcoin_logo.svg#/media/File:Bitcoin.svg
@@ -50,6 +48,29 @@ const BitcoinIcon = () => (
 // credit for the form template goes to:
 // https://chakra-templates.dev/templates/forms/authentication/simpleSignupCard
 export default function PostNews() {
+  const [title, setTitle] = useControllableState({ defaultValue: '' });
+  const [url, setUrl] = useControllableState({ defaultValue: '' });
+  const [body, setBody] = useControllableState({ defaultValue: '' });
+  const [finalPost, setFinalPost] = useState('');
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const toast = useToast();
+
+  const generatePost = () => {
+    console.log('title:', title);
+    console.log('url:', url);
+    console.log('body:', body);
+
+    setFinalPost(`{
+  "p": "ons",
+  "op": "post",
+  "title": "${title}"${url ? `\n  "url": "${url}"` : ''},${body ? `\n  "body": "${body}"` : ''}
+}`);
+
+    onOpen();
+  };
+
   return (
     <Stack
       spacing={8}
@@ -87,6 +108,7 @@ export default function PostNews() {
             <Input
               type="text"
               placeholder="The main headline to inscribe"
+              onChange={e => setTitle(e.target.value)}
             />
           </FormControl>
           <FormControl id="url">
@@ -94,6 +116,7 @@ export default function PostNews() {
             <Input
               type="text"
               placeholder="Optional: add an external link"
+              onChange={e => setUrl(e.target.value)}
             />
           </FormControl>
           <FormControl>
@@ -101,6 +124,7 @@ export default function PostNews() {
             <Textarea
               resize="vertical"
               placeholder="Optional: include either plain text or markdown"
+              onChange={e => setBody(e.target.value)}
             />
           </FormControl>
           <Stack
@@ -118,6 +142,39 @@ export default function PostNews() {
         </Stack>
       </Box>
       <Link to="/">Back Home</Link>
+      <Modal
+        onClose={onClose}
+        size="full"
+        isOpen={isOpen}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>
+            <Heading>Ready to Inscribe</Heading>
+          </ModalHeader>
+          <ModalCloseButton />
+
+          <ModalBody>
+            <Code
+              display="block"
+              whiteSpace="pre"
+              px={2}
+              mb={6}
+              children={finalPost}
+            ></Code>
+            <Text>Link and instructions go here.</Text>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              colorScheme="blue"
+              mr={3}
+              onClick={onClose}
+            >
+              Close
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Stack>
   );
 }
