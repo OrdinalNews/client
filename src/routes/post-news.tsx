@@ -10,8 +10,22 @@ import {
   Text,
   Textarea,
   useColorModeValue,
+  useToast,
 } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
+
+const toast = useToast();
+
+const generatePost = () => {
+  console.log('click');
+  toast({
+    title: 'Click Click',
+    description: 'Coming soon!',
+    status: 'info',
+    duration: 5000,
+    isClosable: true,
+  });
+};
 
 // credit for the bitcoin icon
 // https://commons.wikimedia.org/wiki/File:Bitcoin_logo.svg#/media/File:Bitcoin.svg
@@ -61,7 +75,7 @@ export default function PostNews() {
       <Box
         rounded={'3xl'}
         bg={useColorModeValue('white', 'gray.700')}
-        boxShadow={'2xl'}
+        boxShadow={'dark-lg'}
         p={8}
       >
         <Stack spacing={4}>
@@ -96,11 +110,7 @@ export default function PostNews() {
             <Button
               loadingText="Submitting"
               size="lg"
-              bg={'blue.400'}
-              color={'white'}
-              _hover={{
-                bg: 'blue.500',
-              }}
+              onClick={generatePost}
             >
               Generate
             </Button>
