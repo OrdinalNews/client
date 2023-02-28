@@ -66,7 +66,27 @@ button:focus-visible {
   text-decoration: none !important;
 }
 
+.chakra-input:focus-visible,
+.chakra-textarea:focus-visible {
+  border-color: #1eaab4 !important;
+  box-shadow: 0 0 0 2px #1eaab4 !important;
+}
+
+.chakra-button {
+  background-color: #1eaab4 !important
+}
+
+.chakra-button:hover {
+  border-color: #f7931a;
+  background-color: #f7931a !important
+}
+
+.bitcoin-icon:hover {
+  color: #f7931a;
+}
+
 /*
 bright: #1eaab4
 muted: #2ad0db
+btc orange; #f7931a
 */
