@@ -107,7 +107,7 @@ export default function PostNews() {
             <FormLabel>Title</FormLabel>
             <Input
               type="text"
-              placeholder="The main headline to inscribe"
+              placeholder="The main headline"
               onChange={e => setTitle(e.target.value)}
             />
           </FormControl>
@@ -115,7 +115,7 @@ export default function PostNews() {
             <FormLabel>URL</FormLabel>
             <Input
               type="text"
-              placeholder="Optional: add an external link"
+              placeholder="Optional: add a link"
               onChange={e => setUrl(e.target.value)}
             />
           </FormControl>
@@ -123,7 +123,7 @@ export default function PostNews() {
             <FormLabel>Body</FormLabel>
             <Textarea
               resize="vertical"
-              placeholder="Optional: include either plain text or markdown"
+              placeholder="Plain text or markdown"
               onChange={e => setBody(e.target.value)}
             />
           </FormControl>
