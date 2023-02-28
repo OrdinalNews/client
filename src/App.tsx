@@ -1,9 +1,22 @@
+import { ChakraProvider } from '@chakra-ui/react';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import './App.css';
+import './index.css';
+import Root404 from './routes/root-404';
+import RootIndex from './routes/root-index';
 
-function Contents() {
-  return <p>hello world!</p>;
-}
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <RootIndex />,
+    errorElement: <Root404 />,
+  },
+]);
 
 export default function App() {
-  return <Contents />;
+  return (
+    <ChakraProvider>
+      <RouterProvider router={router} />
+    </ChakraProvider>
+  );
 }
