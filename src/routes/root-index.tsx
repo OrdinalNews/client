@@ -12,7 +12,7 @@ export default function RootIndex() {
       />
       <Heading>Ordinal News Standard</Heading>
 
-      <Text>Setting the standard for inscribing news on Bitcoin.</Text>
+      <Text fontSize="xl">Setting the standard for inscribing news on Bitcoin.</Text>
       <br />
       <Text>
         <Link to="/post-news">Inscribe the News</Link> |{' '}
