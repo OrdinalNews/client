@@ -7,6 +7,7 @@ export default function RootIndex() {
 
       <Text>Cool stuff coming soon.</Text>
       <br />
+      <br />
       <ChakraLink
         href="https://docs.inscribe.news"
         isExternal
