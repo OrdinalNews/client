@@ -58,9 +58,15 @@ export default function PostNews() {
   const toast = useToast();
 
   const generatePost = () => {
-    console.log('title:', title);
-    console.log('url:', url);
-    console.log('body:', body);
+    if (!title || title.length === 0) {
+      toast({
+        title: 'Title is required',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+      return;
+    }
 
     setFinalPost(`{
   "p": "ons",
@@ -144,8 +150,10 @@ export default function PostNews() {
       <Link to="/">Back Home</Link>
       <Modal
         onClose={onClose}
-        size="full"
+        size="xl"
         isOpen={isOpen}
+        isCentered
+        closeOnOverlayClick={false}
       >
         <ModalOverlay />
         <ModalContent>
@@ -162,7 +170,15 @@ export default function PostNews() {
               mb={6}
               children={finalPost}
             ></Code>
-            <Text>Link and instructions go here.</Text>
+            <Text>
+              You can upload an inscription using ord or through a service like Gamma and
+              OrdinalsBot.
+            </Text>
+            <br />
+            <Text>
+              Use the "plain text" inscription type if you're using Gamma, or make sure the file's
+              type is `.txt` if using the Ordinals CLI.
+            </Text>
           </ModalBody>
           <ModalFooter>
             <Button
