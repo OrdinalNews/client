@@ -80,6 +80,14 @@ button:focus-visible {
   background-color: #f7931a !important
 }
 
+.link-button {
+  color: white !important;
+}
+
+.link-button:hover {
+  color: white !important;
+}
+
 .bitcoin-icon:hover {
   color: #f7931a;
 }
