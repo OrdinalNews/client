@@ -23,8 +23,8 @@ import {
   useDisclosure,
   useToast,
 } from '@chakra-ui/react';
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import copy from 'copy-to-clipboard';
 
 // credit for the bitcoin icon
 // https://commons.wikimedia.org/wiki/File:Bitcoin_logo.svg#/media/File:Bitcoin.svg
@@ -52,18 +52,47 @@ export default function PostNews() {
   const [title, setTitle] = useControllableState({ defaultValue: '' });
   const [url, setUrl] = useControllableState({ defaultValue: '' });
   const [body, setBody] = useControllableState({ defaultValue: '' });
-  const [finalPost, setFinalPost] = useState('');
-
+  const [finalPost, setFinalPost] = useControllableState({ defaultValue: '' });
   const { isOpen, onOpen, onClose } = useDisclosure();
-
   const toast = useToast();
+
+  const copyText = () => {
+    if (!finalPost || finalPost.length === 0) {
+      toast({
+        title: 'No data to copy',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+        variant: 'left-accent',
+      });
+      return;
+    }
+    const copyStatus = copy(finalPost);
+    if (copyStatus) {
+      toast({
+        title: `Copied ordinal news to clipboard`,
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+        variant: 'left-accent',
+      });
+      return;
+    }
+    toast({
+      title: `Unable to copy to clipboard`,
+      status: 'error',
+      duration: 3000,
+      isClosable: true,
+      variant: 'left-accent',
+    });
+  };
 
   const generatePost = () => {
     if (!title || title.length === 0) {
       toast({
         title: 'Title is required',
         status: 'error',
-        duration: 5000,
+        duration: 3000,
         isClosable: true,
         variant: 'left-accent',
       });
@@ -163,7 +192,6 @@ export default function PostNews() {
             <Heading>Ready to Inscribe</Heading>
           </ModalHeader>
           <ModalCloseButton />
-
           <ModalBody>
             <Code
               display="block"
@@ -172,6 +200,13 @@ export default function PostNews() {
               mb={6}
               children={finalPost}
             ></Code>
+            <Button
+              mb={6}
+              size="sm"
+              onClick={copyText}
+            >
+              Copy to Clipboard
+            </Button>
             <Text>
               You can upload an inscription using ord or through a service like{' '}
               <ChakraLink
@@ -191,13 +226,12 @@ export default function PostNews() {
             </Text>
             <br />
             <Text>
-              Use the "plain text" inscription type if you're using Gamma , or make sure the file's
+              Use the "plain text" inscription type if you're using Gamma, or make sure the file's
               type is `.txt` if using the Ordinals CLI.
             </Text>
           </ModalBody>
           <ModalFooter>
             <Button
-              colorScheme="blue"
               mr={3}
               onClick={onClose}
             >
