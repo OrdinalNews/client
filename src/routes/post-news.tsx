@@ -104,7 +104,7 @@ export default function PostNews() {
     setFinalPost(`{
   "p": "ons",
   "op": "post",
-  "title": "${title}"${url ? `\n  "url": "${url}"` : ''},${body ? `\n  "body": "${body}"` : ''}
+  "title": "${title}"${url ? `,\n  "url": "${url}"` : ''}${body ? `,\n  "body": "${body}"` : ''}
 }`);
 
     onOpen();
