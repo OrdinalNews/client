@@ -80,6 +80,11 @@ button:focus-visible {
   background-color: #f7931a !important
 }
 
+.chakra-modal__overlay {
+  width: 100% !important;
+  margin: 0 auto;
+}
+
 .link-button {
   color: white !important;
 }
