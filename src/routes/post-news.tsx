@@ -1,5 +1,6 @@
 import {
   Alert,
+  AlertDescription,
   AlertIcon,
   Box,
   Button,
@@ -17,6 +18,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Spacer,
   Stack,
   Text,
   Textarea,
@@ -258,10 +260,21 @@ export default function PostNews() {
               </Text>
               <Alert
                 status="warning"
-                my={6}
+                py={[0, 6]}
+                my={[0, 6]}
+                minH={['180px', 'fit-content']}
               >
                 <AlertIcon />
-                Remember, always DYOR before using a tool or service!
+                <AlertDescription>
+                  Remember,{' '}
+                  <Text
+                    as="b"
+                    title="Do Your Own Research"
+                  >
+                    always DYOR
+                  </Text>{' '}
+                  before using a tool or service!
+                </AlertDescription>
               </Alert>
               <Text>
                 Use the "plain text" inscription type if you're using Gamma, or make sure the file's
@@ -284,156 +297,3 @@ export default function PostNews() {
     </>
   );
 }
-
-/*
-<Stack
-      spacing={8}
-      mx={'auto'}
-      w={['fit-content', 'fit-content', 'lg']}
-      py={12}
-      px={6}
-    >
-      <Stack align={'center'}>
-        <Heading
-          fontSize={'4xl'}
-          textAlign={'center'}
-        >
-          Inscribe the News
-        </Heading>
-        <Text
-          fontSize={'lg'}
-          color={'gray.600'}
-        >
-          on Bitcoin, forever <BitcoinIcon />
-        </Text>
-      </Stack>
-      <Box
-        rounded={'3xl'}
-        bg={useColorModeValue('white', 'gray.700')}
-        boxShadow={'dark-lg'}
-        p={8}
-      >
-        <Stack spacing={4}>
-          <FormControl
-            id="title"
-            isRequired
-          >
-            <FormLabel>Title</FormLabel>
-            <Input
-              type="text"
-              placeholder="The main headline"
-              onChange={e => setTitle(e.target.value)}
-            />
-          </FormControl>
-          <FormControl id="url">
-            <FormLabel>URL</FormLabel>
-            <Input
-              type="text"
-              placeholder="Add a link (optional)"
-              onChange={e => setUrl(e.target.value)}
-            />
-          </FormControl>
-          <FormControl>
-            <FormLabel>Body</FormLabel>
-            <Textarea
-              resize="vertical"
-              placeholder="Plain text or markdown (optional)"
-              onChange={e => setBody(e.target.value)}
-            />
-          </FormControl>
-          <Stack
-            spacing={10}
-            pt={2}
-          >
-            <Button
-              loadingText="Submitting"
-              size="lg"
-              onClick={generatePost}
-              borderRadius="xl"
-            >
-              Generate
-            </Button>
-          </Stack>
-        </Stack>
-      </Box>
-      <Link to="/">Back Home</Link>
-      <Modal
-        onClose={onClose}
-        size="xl"
-        isOpen={isOpen}
-        isCentered
-        closeOnOverlayClick={false}
-      >
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>
-            <Heading>Ready to Inscribe</Heading>
-          </ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <Code
-              display="block"
-              whiteSpace="pre"
-              px={2}
-              mb={6}
-              children={finalPost}
-            ></Code>
-            <Button
-              mb={6}
-              size="md"
-              onClick={copyText}
-              alignSelf="flex-end"
-              borderRadius="xl"
-            >
-              Copy to Clipboard
-            </Button>
-            <Text>
-              You can upload an inscription using ord or through a service like{' '}
-              <ChakraLink
-                href="https://gamma.io/ordinals"
-                isExternal
-              >
-                Gamma
-              </ChakraLink>{' '}
-              and{' '}
-              <ChakraLink
-                href="https://ordinalsbot.com/"
-                isExternal
-              >
-                OrdinalsBot
-              </ChakraLink>
-              , or see the{' '}
-              <ChakraLink
-                href="https://github.com/neu-fi/awesome-ordinals"
-                isExternal
-              >
-                Ordinals Awesome List
-              </ChakraLink>{' '}
-              for even more options.{' '}
-            </Text>
-            <Alert
-              status="warning"
-              my={6}
-            >
-              <AlertIcon />
-              Remember, always DYOR before using a tool or service!
-            </Alert>
-            <Text>
-              Use the "plain text" inscription type if you're using Gamma, or make sure the file's
-              type is `.txt` if using the Ordinals CLI.
-            </Text>
-          </ModalBody>
-          <ModalFooter>
-            <Button
-              mr={3}
-              onClick={onClose}
-              size="md"
-              borderRadius="xl"
-            >
-              Close
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </Stack>
-*/
