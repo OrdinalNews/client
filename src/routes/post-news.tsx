@@ -1,4 +1,6 @@
 import {
+  Alert,
+  AlertIcon,
   Box,
   Button,
   Code,
@@ -202,8 +204,9 @@ export default function PostNews() {
             ></Code>
             <Button
               mb={6}
-              size="sm"
+              size="md"
               onClick={copyText}
+              alignSelf="flex-end"
             >
               Copy to Clipboard
             </Button>
@@ -222,9 +225,22 @@ export default function PostNews() {
               >
                 OrdinalsBot
               </ChakraLink>
-              .
+              , or see the{' '}
+              <ChakraLink
+                href="https://github.com/neu-fi/awesome-ordinals"
+                isExternal
+              >
+                Ordinals Awesome List
+              </ChakraLink>{' '}
+              for even more options.{' '}
             </Text>
-            <br />
+            <Alert
+              status="warning"
+              my={6}
+            >
+              <AlertIcon />
+              Remember, always DYOR before using a tool or service!
+            </Alert>
             <Text>
               Use the "plain text" inscription type if you're using Gamma, or make sure the file's
               type is `.txt` if using the Ordinals CLI.
@@ -234,6 +250,7 @@ export default function PostNews() {
             <Button
               mr={3}
               onClick={onClose}
+              size="md"
             >
               Close
             </Button>
