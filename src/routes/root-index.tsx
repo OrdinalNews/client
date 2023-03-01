@@ -35,6 +35,7 @@ export default function RootIndex() {
           me={[0, 0, 8]}
           mb={[8, 8, 0]}
           w={['fit-content', '75%', 'auto']}
+          borderRadius="xl"
         >
           Inscribe the News
         </Button>
@@ -44,6 +45,7 @@ export default function RootIndex() {
           className="link-button"
           isExternal
           w={['fit-content', '75%', 'auto']}
+          borderRadius="xl"
         >
           Read the Docs
         </Button>

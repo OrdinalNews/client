@@ -174,6 +174,7 @@ export default function PostNews() {
               loadingText="Submitting"
               size="lg"
               onClick={generatePost}
+              borderRadius="xl"
             >
               Generate
             </Button>
@@ -207,6 +208,7 @@ export default function PostNews() {
               size="md"
               onClick={copyText}
               alignSelf="flex-end"
+              borderRadius="xl"
             >
               Copy to Clipboard
             </Button>
@@ -251,6 +253,7 @@ export default function PostNews() {
               mr={3}
               onClick={onClose}
               size="md"
+              borderRadius="xl"
             >
               Close
             </Button>
