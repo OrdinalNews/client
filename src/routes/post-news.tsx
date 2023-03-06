@@ -120,8 +120,8 @@ export default function PostNews() {
       op: 'post',
       title,
       ...(url.length > 0 && { url }),
-      ...(body.length > 0 && { body }),
       ...(author.length > 0 && { author }),
+      ...(body.length > 0 && { body }),
     };
 
     setFinalPost(JSON.stringify(postObject, null, 2));
