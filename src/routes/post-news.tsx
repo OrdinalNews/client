@@ -56,6 +56,7 @@ export default function PostNews() {
   const [title, setTitle] = useControllableState({ defaultValue: '' });
   const [url, setUrl] = useControllableState({ defaultValue: '' });
   const [body, setBody] = useControllableState({ defaultValue: '' });
+  const [author, setAuthor] = useControllableState({ defaultValue: '' });
   const [finalPost, setFinalPost] = useControllableState({ defaultValue: '' });
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
@@ -120,9 +121,10 @@ export default function PostNews() {
       title,
       ...(url.length > 0 && { url }),
       ...(body.length > 0 && { body }),
+      ...(author.length > 0 && { author }),
     };
 
-    setFinalPost(JSON.stringify(postObject));
+    setFinalPost(JSON.stringify(postObject, null, 2));
 
     onOpen();
   };
@@ -224,6 +226,15 @@ export default function PostNews() {
                 placeholder="Add a link (optional)"
                 fontSize={['xs', 'sm', 'xl']}
                 onChange={e => setUrl(e.target.value.trim())}
+              />
+            </FormControl>
+            <FormControl id="author">
+              <FormLabel fontSize={['sm', 'sm', 'xl']}>Author</FormLabel>
+              <Input
+                type="text"
+                placeholder="Add an author (optional)"
+                fontSize={['xs', 'sm', 'xl']}
+                onChange={e => setAuthor(e.target.value.trim())}
               />
             </FormControl>
             <FormControl>
