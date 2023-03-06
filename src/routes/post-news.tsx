@@ -56,6 +56,7 @@ export default function PostNews() {
   const [title, setTitle] = useControllableState({ defaultValue: '' });
   const [url, setUrl] = useControllableState({ defaultValue: '' });
   const [body, setBody] = useControllableState({ defaultValue: '' });
+  const [author, setAuthor] = useControllableState({ defaultValue: '' });
   const [finalPost, setFinalPost] = useControllableState({ defaultValue: '' });
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
@@ -102,8 +103,7 @@ export default function PostNews() {
       });
       return;
     }
-    console.log(`url: ${url.length}`);
-    console.log(`body: ${body.length}`);
+
     if (url.length === 0 && body.length === 0) {
       toast({
         title: 'One of a URL or Body is required',
@@ -115,13 +115,16 @@ export default function PostNews() {
       return;
     }
 
-    setFinalPost(`{
-  "p": "ons",
-  "op": "post",
-  "title": "${title}"${url ? `,\n  "url": "${url}"` : ''}${
-      body ? `,\n  "body": ${JSON.stringify(body)}` : ''
-    }
-}`);
+    const postObject = {
+      p: 'ons',
+      op: 'post',
+      title,
+      ...(url.length > 0 && { url }),
+      ...(author.length > 0 && { author }),
+      ...(body.length > 0 && { body }),
+    };
+
+    setFinalPost(JSON.stringify(postObject, null, 2));
 
     onOpen();
   };
@@ -223,6 +226,15 @@ export default function PostNews() {
                 placeholder="Add a link (optional)"
                 fontSize={['xs', 'sm', 'xl']}
                 onChange={e => setUrl(e.target.value.trim())}
+              />
+            </FormControl>
+            <FormControl id="author">
+              <FormLabel fontSize={['sm', 'sm', 'xl']}>Author</FormLabel>
+              <Input
+                type="text"
+                placeholder="Add an author (optional)"
+                fontSize={['xs', 'sm', 'xl']}
+                onChange={e => setAuthor(e.target.value.trim())}
               />
             </FormControl>
             <FormControl>
