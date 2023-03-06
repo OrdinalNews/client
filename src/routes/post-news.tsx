@@ -102,8 +102,7 @@ export default function PostNews() {
       });
       return;
     }
-    console.log(`url: ${url.length}`);
-    console.log(`body: ${body.length}`);
+
     if (url.length === 0 && body.length === 0) {
       toast({
         title: 'One of a URL or Body is required',
@@ -115,13 +114,15 @@ export default function PostNews() {
       return;
     }
 
-    setFinalPost(`{
-  "p": "ons",
-  "op": "post",
-  "title": "${title}"${url ? `,\n  "url": "${url}"` : ''}${
-      body ? `,\n  "body": ${JSON.stringify(body)}` : ''
-    }
-}`);
+    const postObject = {
+      p: 'ons',
+      op: 'post',
+      title,
+      ...(url.length > 0 && { url }),
+      ...(body.length > 0 && { body }),
+    };
+
+    setFinalPost(JSON.stringify(postObject));
 
     onOpen();
   };
