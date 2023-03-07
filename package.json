@@ -18,7 +18,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.8.2",
-    "sort-by": "^1.2.0"
+    "sort-by": "^1.2.0",
+    "throttled-queue": "^2.1.4"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20230228.0",

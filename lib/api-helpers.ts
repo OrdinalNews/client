@@ -1,3 +1,5 @@
+import throttledQueue from 'throttled-queue';
+
 // returned from ordapi.xyz
 export type OrdApiInscription = {
   address: string;
@@ -43,6 +45,16 @@ export type HiroApiInscription = {
   timestamp: number;
 };
 
+// defining the news standard in TS
+export type OrdinalNews = {
+  p: string;
+  op: string;
+  title: string;
+  url?: string;
+  body?: string;
+  author?: string;
+};
+
 // for storage in Cloudflare KV
 // can be populated by either API
 // used to link different key types
@@ -51,7 +63,7 @@ export type InscriptionMeta = {
   number: number;
   content_type: string;
   content_length: number;
-  lastUpdated: Date;
+  last_updated: Date;
 };
 
 // for storage in Cloudflare KV
@@ -66,6 +78,26 @@ export type InscriptionInfo = {
   genesis_tx_id: string; // 'genesis transaction' | genesis_tx_id
   timestamp: Date; // timestamp in both, but string vs date
 };
+
+// throttle to 1 request per second
+const throttle = throttledQueue(1, 1000, true);
+
+export async function fetchUrl(url: string) {
+  const response = await throttle(() => fetch(url));
+  if (response.status === 200) {
+    const text = await response.text();
+    try {
+      return JSON.parse(text);
+    } catch {
+      return text;
+    }
+  }
+  throw new Error(`fetchUrl: ${url} ${response.status} ${response.statusText}`);
+}
+
+// both support /inscription and /content paths
+export const ordinalsUrlBase = new URL('https://ordinals.com/');
+export const ordApiUrlBase = new URL('https://ordapi.xyz/');
 
 // distinguish content-type vs mime-type
 
