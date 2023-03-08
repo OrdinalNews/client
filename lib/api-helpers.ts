@@ -1,4 +1,10 @@
+import { KVNamespace } from '@cloudflare/workers-types';
 import throttledQueue from 'throttled-queue';
+
+// KV binding
+export interface Env {
+  ORD_NEWS_INDEX: KVNamespace;
+}
 
 // returned from ordapi.xyz
 export type OrdApiInscription = {
