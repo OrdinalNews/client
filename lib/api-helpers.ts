@@ -3,7 +3,7 @@ import throttledQueue from 'throttled-queue';
 
 // KV binding
 export interface Env {
-  ord_news_index: KVNamespace;
+  ORD_NEWS_INDEX: KVNamespace;
 }
 
 // returned from ordapi.xyz
@@ -69,7 +69,7 @@ export type InscriptionMeta = {
   number: number;
   content_type: string;
   content_length: number;
-  last_updated: Date;
+  last_updated: string;
 };
 
 // for storage in Cloudflare KV
@@ -82,7 +82,7 @@ export type InscriptionInfo = {
   content_length: number; // "content length" | content_length
   genesis_block_height: number; // "genesis height" | genesis_block_height
   genesis_tx_id: string; // 'genesis transaction' | genesis_tx_id
-  timestamp: Date; // timestamp in both, but string vs date
+  timestamp: string; // timestamp in both, but string vs date
 };
 
 // throttle to 1 request per second
@@ -107,7 +107,7 @@ export const ordApiUrlBase = new URL('https://ordapi.xyz/');
 
 // distinguish content-type vs mime-type
 
-// inscription-NUMBER = InscriptionInfo
+// inscription-NUMBER-info = InscriptionInfo
 //   metadata: id, number, content-type, content-length, lastUpdated
 //   value: InscriptionInfo type
 // inscription-NUMBER-content
@@ -119,5 +119,7 @@ export const ordApiUrlBase = new URL('https://ordapi.xyz/');
 
 // takes data and status code and returns a Response object
 export function createResponse(data: unknown, status = 200) {
-  return new Response(typeof data === 'string' ? data : JSON.stringify(data), { status: status });
+  return new Response(typeof data === 'string' ? data : JSON.stringify(data, null, 2), {
+    status: status,
+  });
 }
