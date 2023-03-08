@@ -72,6 +72,10 @@ export type InscriptionMeta = {
   last_updated: string;
 };
 
+export type InscriptionContent = {
+  content: any;
+};
+
 // for storage in Cloudflare KV
 // can be populated by either API
 export type InscriptionInfo = {

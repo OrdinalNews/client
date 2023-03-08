@@ -1,67 +1,95 @@
 import { EventContext } from '@cloudflare/workers-types';
-import { createResponse, fetchUrl, ordinalsUrlBase } from '../../../lib/api-helpers';
-import { Env, InscriptionInfo, InscriptionMeta, OrdApiInscription } from '../../../lib/api-types';
+import { createResponse, fetchContentFromOrdinals } from '../../../lib/api-helpers';
+import { Env, InscriptionContent, InscriptionMeta } from '../../../lib/api-types';
+import { getOrFetchInscriptionInfo } from '../inscription/[id]';
 
 export async function onRequest(context: EventContext<Env, any, any>): Promise<Response> {
   try {
-    // try to fetch the key from KV
+    // setup and config
     const { env } = context;
-    const id = context.params.id;
-    const keyName = `inscription-${id}-info`;
-    const KVContent = await env.ORD_NEWS_INDEX.getWithMetadata(keyName, { type: 'json' });
-    // return if the key is found
-    console.log(KVContent);
-    if (KVContent.metadata !== null && KVContent.value !== null) {
-      const metadata = KVContent.metadata as InscriptionMeta;
-      const content = KVContent.value as any;
-      return createResponse({
-        ...content,
-        ...metadata,
-      });
+    const id = String(context.params.id);
+    // option 1: return content as an object with metadata
+    // return createResponse(await getOrFetchInscriptionContent(env, id));
+    // option 2: return content directly
+    // TODO: swallowing errors here
+    const contentData = await getOrFetchInscriptionContent(env, id).catch(err => {
+      console.log(`err: ${err}`);
+      return undefined;
+    });
+    if (contentData === undefined || Object.keys(contentData).length === 0) {
+      return createResponse(`Inscription content not found for ${id}`, 404);
     }
-    // look up info if not found
-    const url = new URL(`/content/${id}`, ordinalsUrlBase);
-    const content = await fetchUrl(url.toString()).catch(() => undefined);
-    if (content === undefined || Object.keys(content).length === 0) {
-      return createResponse(`Content not found for ID: ${id}`, 404);
+    let { readable, writable } = new TransformStream();
+    const buffer = new Response(contentData.content).body;
+    if (buffer === null) {
+      throw new Error('Unable to create buffer from content');
     }
-    const apiContent = content as OrdApiInscription;
-    // TODO: NEED TO QUERY INSCRIPTION DATA HERE TOO
-    // WOULD BE GREAT TO CALL INSCRIPTION FUNCTION
-    // NEED TO SEPARATE AS HELPERS TO ONREQUEST
-    // AND TRY EXPORTING FOR USE ELSEWHERE
-    console.log(`apiContent: ${JSON.stringify(apiContent, null, 2)}`);
-    // make sure IDs match
-    if (apiContent.id !== id) {
-      return createResponse(`Content ID mismatch: ${content.id} !== ${id}`, 500);
-    }
-    // build data based on api types
-    const metadata: InscriptionMeta = {
-      id: apiContent.id,
-      number: apiContent.inscription_number,
-      content_type: apiContent['content type'],
-      content_length: Number(apiContent['content length']),
-      last_updated: new Date().toISOString(),
-    };
-    const txid = apiContent['genesis transaction'].split('/').pop();
-    const value: InscriptionInfo = {
-      id: apiContent.id,
-      number: apiContent.inscription_number,
-      address: apiContent.address,
-      content_type: apiContent['content type'],
-      content_length: Number(apiContent['content length']),
-      genesis_block_height: Number(apiContent['genesis height']),
-      genesis_tx_id: txid ? txid : apiContent['genesis transaction'],
-      timestamp: new Date(apiContent.timestamp).toISOString(),
-    };
-    // store data in KV for next query
-    await env.ORD_NEWS_INDEX.put(keyName, JSON.stringify(value), { metadata });
-    // return data
-    return createResponse({
-      ...value,
-      ...metadata,
+    buffer.pipeTo(writable);
+    return new Response(readable, {
+      headers: {
+        'Content-Type': contentData.content_type,
+      },
     });
   } catch (err) {
     return createResponse(err, 500);
   }
+}
+
+export async function fetchContentFromKV(
+  env: Env,
+  id: string
+): Promise<(InscriptionMeta & InscriptionContent) | undefined> {
+  try {
+    // try to fetch the key from KV
+    const contentKey = `inscription-${id}-content`;
+    const kvContent = await env.ORD_NEWS_INDEX.getWithMetadata(contentKey, { type: 'json' });
+    // return if the key is found
+    if (kvContent.metadata !== null && kvContent.value !== null) {
+      const metadata = kvContent.metadata as InscriptionMeta;
+      const content = kvContent.value as any;
+      return {
+        content,
+        ...metadata,
+      };
+    }
+  } catch (err) {
+    return undefined;
+  }
+}
+
+export async function getOrFetchInscriptionContent(env: Env, id: string) {
+  // try to fetch the key from KV
+  const kvContent = await fetchContentFromKV(env, id);
+  if (kvContent !== undefined) {
+    return kvContent;
+  }
+  // look up info
+  const info = await getOrFetchInscriptionInfo(env, id).catch(() => undefined);
+  if (info === undefined || Object.keys(info).length === 0) {
+    throw new Error(`Inscription info not found for ${id}`);
+  }
+  console.log(`info: ${JSON.stringify(info, null, 2)}`);
+  // look up content if not found
+  const mimeType = info.content_type.split(';')[0];
+  const content = await fetchContentFromOrdinals(id, mimeType).catch(() => undefined);
+  if (content === undefined) {
+    throw new Error(`Inscription content not found for ID: ${id}`);
+  }
+  // build metadata based on info
+  const metadata: InscriptionMeta = {
+    id: info.id,
+    number: info.number,
+    content_type: info.content_type,
+    content_length: info.content_length,
+    last_updated: new Date().toISOString(),
+  };
+  console.log(`metadata: ${JSON.stringify(metadata, null, 2)}`);
+  // store data in KV for next query
+  const contentKey = `inscription-${id}-content`;
+  await env.ORD_NEWS_INDEX.put(contentKey, await content.arrayBuffer(), { metadata });
+  // return data
+  return {
+    content,
+    ...metadata,
+  };
 }
