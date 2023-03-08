@@ -3,7 +3,7 @@ import throttledQueue from 'throttled-queue';
 
 // KV binding
 export interface Env {
-  ORD_NEWS_INDEX: KVNamespace;
+  ord_news_index: KVNamespace;
 }
 
 // returned from ordapi.xyz
