@@ -1,13 +1,6 @@
 import { EventContext } from '@cloudflare/workers-types';
-import {
-  createResponse,
-  Env,
-  fetchUrl,
-  InscriptionInfo,
-  InscriptionMeta,
-  OrdApiInscription,
-  ordinalsUrlBase,
-} from '../../../lib/api-helpers';
+import { createResponse, fetchUrl, ordinalsUrlBase } from '../../../lib/api-helpers';
+import { Env, InscriptionInfo, InscriptionMeta, OrdApiInscription } from '../../../lib/api-types';
 
 export async function onRequest(context: EventContext<Env, any, any>): Promise<Response> {
   try {

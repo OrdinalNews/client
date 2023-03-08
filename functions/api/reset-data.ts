@@ -1,5 +1,6 @@
 import { EventContext } from '@cloudflare/workers-types';
-import { createResponse, Env } from '../../lib/api-helpers';
+import { createResponse } from '../../lib/api-helpers';
+import { Env } from '../../lib/api-types';
 
 export async function onRequest(context: EventContext<Env, any, any>): Promise<Response> {
   try {

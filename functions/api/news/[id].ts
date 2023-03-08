@@ -1,4 +1,5 @@
-import { createResponse, fetchUrl, OrdinalNews, ordinalsUrlBase } from '../../../lib/api-helpers';
+import { createResponse, fetchUrl, ordinalsUrlBase } from '../../../lib/api-helpers';
+import { OrdinalNews } from '../../../lib/api-types';
 import MarkdownIt from 'markdown-it';
 
 export async function onRequest({ params }): Promise<Response> {
