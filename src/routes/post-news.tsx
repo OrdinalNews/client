@@ -309,6 +309,12 @@ export default function PostNews() {
                   isExternal
                 >
                   Gamma
+                </ChakraLink>,
+                <ChakraLink
+                  href="https://ordimint.com"
+                  isExternal
+                >
+                  Ordimint
                 </ChakraLink>{' '}
                 and{' '}
                 <ChakraLink
