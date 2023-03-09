@@ -46,19 +46,20 @@ export async function fetchContentFromKV(
   try {
     // try to fetch the key from KV
     const contentKey = `inscription-${id}-content`;
-    const kvContent = await env.ORD_NEWS_INDEX.getWithMetadata(contentKey, { type: 'json' });
+    const kvContent = await env.ORD_NEWS_INDEX.getWithMetadata(contentKey, { type: 'arrayBuffer' });
     // return if the key is found
     if (kvContent.metadata !== null && kvContent.value !== null) {
       const metadata = kvContent.metadata as InscriptionMeta;
       const contentData = kvContent.value as ArrayBuffer;
       console.log(`HAPPY DANCE DATA WAS FOUND IN KV!`);
       return {
-        content: new Response(contentData, { headers: { 'Content-Type': metadata.content_type } }),
+        content: new Response(contentData),
         ...metadata,
       };
     }
   } catch (err) {
     console.log(`NO DATA FOUND IN KV!`);
+    console.log(`fetchContentFromKV err: ${err}`);
     return undefined;
   }
 }
