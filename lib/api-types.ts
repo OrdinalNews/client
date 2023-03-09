@@ -73,7 +73,7 @@ export type InscriptionMeta = {
 };
 
 export type InscriptionContent = {
-  content: any;
+  content: Response;
 };
 
 // for storage in Cloudflare KV

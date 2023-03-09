@@ -16,25 +16,29 @@ export async function onRequest(context: EventContext<Env, any, any>): Promise<R
       console.log(`err: ${err}`);
       return undefined;
     });
-    if (contentData === undefined || Object.keys(contentData).length === 0) {
+    if (
+      contentData === undefined ||
+      Object.keys(contentData).length === 0 ||
+      contentData.content.body === null
+    ) {
+      console.log(`contentData: ${contentData}`);
       return createResponse(`Inscription content not found for ${id}`, 404);
     }
     let { readable, writable } = new TransformStream();
-    const buffer = new Response(contentData.content).body;
-    if (buffer === null) {
-      throw new Error('Unable to create buffer from content');
-    }
-    buffer.pipeTo(writable);
+    contentData.content.body.pipeTo(writable);
     return new Response(readable, {
       headers: {
         'Content-Type': contentData.content_type,
       },
     });
   } catch (err) {
+    console.log(`500 err: ${err}`);
     return createResponse(err, 500);
   }
 }
 
+// TODO: LEFT OFF WITH TEXT WORKING
+// BUT IMAGES ARE NOT?
 export async function fetchContentFromKV(
   env: Env,
   id: string
@@ -46,13 +50,15 @@ export async function fetchContentFromKV(
     // return if the key is found
     if (kvContent.metadata !== null && kvContent.value !== null) {
       const metadata = kvContent.metadata as InscriptionMeta;
-      const content = kvContent.value as any;
+      const contentData = kvContent.value as ArrayBuffer;
+      console.log(`HAPPY DANCE DATA WAS FOUND IN KV!`);
       return {
-        content,
+        content: new Response(contentData, { headers: { 'Content-Type': metadata.content_type } }),
         ...metadata,
       };
     }
   } catch (err) {
+    console.log(`NO DATA FOUND IN KV!`);
     return undefined;
   }
 }
@@ -70,11 +76,14 @@ export async function getOrFetchInscriptionContent(env: Env, id: string) {
   }
   console.log(`info: ${JSON.stringify(info, null, 2)}`);
   // look up content if not found
-  const mimeType = info.content_type.split(';')[0];
-  const content = await fetchContentFromOrdinals(id, mimeType).catch(() => undefined);
-  if (content === undefined) {
+  // const mimeType = info.content_type.split(';')[0];
+  const content = await fetchContentFromOrdinals(id).catch(() => undefined);
+  if (content === undefined || content.body === null) {
     throw new Error(`Inscription content not found for ID: ${id}`);
   }
+  //let { readable, writable } = new TransformStream();
+  //content.body.pipeTo(writable);
+
   // build metadata based on info
   const metadata: InscriptionMeta = {
     id: info.id,
@@ -86,10 +95,11 @@ export async function getOrFetchInscriptionContent(env: Env, id: string) {
   console.log(`metadata: ${JSON.stringify(metadata, null, 2)}`);
   // store data in KV for next query
   const contentKey = `inscription-${id}-content`;
+  const contentResponse = content.clone();
   await env.ORD_NEWS_INDEX.put(contentKey, await content.arrayBuffer(), { metadata });
   // return data
   return {
-    content,
+    content: contentResponse,
     ...metadata,
   };
 }

@@ -44,14 +44,14 @@ export async function fetchInfoFromOrdApi(id: string): Promise<InscriptionInfo> 
 
 // fetches ordinals.com/content results
 // and not sure what to do with types here
-export async function fetchContentFromOrdinals(id: string, mimeType: string): Promise<Blob> {
+export async function fetchContentFromOrdinals(id: string): Promise<Response> {
   const url = new URL(`/content/${id}`, ordinalsUrlBase);
-  const data = await fetchUrl(url.toString()).catch(() => {});
-  if (data === undefined || Object.keys(data).length === 0) {
+  const response = await throttle(() => fetch(url.toString()).catch(() => {}));
+  // const data = await fetchUrl(url.toString()).catch(() => {});
+  if (response === undefined) {
     throw new Error(`fetchContentFromOrdinals: ${url} returned no data`);
   }
-  const dataBlob = new Blob([data], { type: mimeType });
-  return dataBlob;
+  return response;
 }
 
 // both support /inscription and /content paths
