@@ -18,7 +18,6 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Spacer,
   Stack,
   Text,
   Textarea,
@@ -128,48 +127,6 @@ export default function PostNews() {
 
     onOpen();
   };
-
-  // credit: https://github.com/kemitchell/markdown-escape.js/blob/main/index.js
-  interface ReplacementList {
-    search: RegExp;
-    replace: string;
-    name: string;
-  }
-
-  // { search: /\*/g, replace: '\\*', name: 'asterisks' },
-  //  { search: /#/g, replace: '\\#', name: 'number signs' },
-  //  { search: /\//g, replace: '\\/', name: 'slashes' },
-  //  { search: /\(/g, replace: '\\(', name: 'parentheses' },
-  //  { search: /\)/g, replace: '\\)', name: 'parentheses' },
-  //  { search: /\[/g, replace: '\\[', name: 'square brackets' },
-  //  { search: /\]/g, replace: '\\]', name: 'square brackets' },
-  //  { search: /</g, replace: '&lt;', name: 'angle brackets' },
-  //  { search: />/g, replace: '&gt;', name: 'angle brackets' },
-  //  { search: /_/g, replace: '\\_', name: 'underscores' },
-
-  /*
-
-  TODO: this site did way better, follow their pattern re: markdown
-  https://jsonformatter.curiousconcept.com/#
-  Fixed the problems to make valid JSON!
-
-  const replacements = [
-    { search: /`/g, replace: '\\`', name: 'codeblocks' },
-    { search: /“/g, replace: '\\"', name: 'quotes' },
-    { search: /”/g, replace: '\\"', name: 'quotes' },
-    { search: /\n/g, replace: '\\n', name: 'newlines' },
-    { search: /\[/g, replace: '\\[', name: 'square brackets' },
-    { search: /\[/g, replace: '\\]', name: 'square brackets' },
-  ] satisfies ReplacementList[];
-
-  function escapeText(text: string) {
-    return replacements.reduce(
-      (escaped, { search, replace }) => escaped.replace(search, replace),
-      text
-    );
-  }
-
-  */
 
   return (
     <>
