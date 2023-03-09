@@ -13,7 +13,7 @@ export async function onRequest(context: EventContext<Env, any, any>): Promise<R
     // option 2: return content directly
     // TODO: swallowing errors here
     const contentData = await getOrFetchInscriptionContent(env, id).catch(err => {
-      console.log(`err: ${err}`);
+      console.log(`getOrFetchInscriptionContent err: ${err}`);
       return undefined;
     });
     if (
@@ -21,7 +21,6 @@ export async function onRequest(context: EventContext<Env, any, any>): Promise<R
       Object.keys(contentData).length === 0 ||
       contentData.content.body === null
     ) {
-      console.log(`contentData: ${contentData}`);
       return createResponse(`Inscription content not found for ${id}`, 404);
     }
     let { readable, writable } = new TransformStream();
@@ -51,14 +50,12 @@ export async function fetchContentFromKV(
     if (kvContent.metadata !== null && kvContent.value !== null) {
       const metadata = kvContent.metadata as InscriptionMeta;
       const contentData = kvContent.value as ArrayBuffer;
-      console.log(`HAPPY DANCE DATA WAS FOUND IN KV!`);
       return {
         content: new Response(contentData),
         ...metadata,
       };
     }
   } catch (err) {
-    console.log(`NO DATA FOUND IN KV!`);
     console.log(`fetchContentFromKV err: ${err}`);
     return undefined;
   }
@@ -75,7 +72,6 @@ export async function getOrFetchInscriptionContent(env: Env, id: string) {
   if (info === undefined || Object.keys(info).length === 0) {
     throw new Error(`Inscription info not found for ${id}`);
   }
-  console.log(`info: ${JSON.stringify(info, null, 2)}`);
   // look up content if not found
   // const mimeType = info.content_type.split(';')[0];
   const content = await fetchContentFromOrdinals(id).catch(() => undefined);
@@ -93,7 +89,6 @@ export async function getOrFetchInscriptionContent(env: Env, id: string) {
     content_length: info.content_length,
     last_updated: new Date().toISOString(),
   };
-  console.log(`metadata: ${JSON.stringify(metadata, null, 2)}`);
   // store data in KV for next query
   const contentKey = `inscription-${id}-content`;
   const contentResponse = content.clone();
