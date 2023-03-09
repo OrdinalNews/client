@@ -4,6 +4,7 @@ import {
   AlertIcon,
   Box,
   Button,
+  ButtonGroup,
   Code,
   FormControl,
   FormLabel,
@@ -18,7 +19,6 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Spacer,
   Stack,
   Text,
   Textarea,
@@ -128,48 +128,6 @@ export default function PostNews() {
 
     onOpen();
   };
-
-  // credit: https://github.com/kemitchell/markdown-escape.js/blob/main/index.js
-  interface ReplacementList {
-    search: RegExp;
-    replace: string;
-    name: string;
-  }
-
-  // { search: /\*/g, replace: '\\*', name: 'asterisks' },
-  //  { search: /#/g, replace: '\\#', name: 'number signs' },
-  //  { search: /\//g, replace: '\\/', name: 'slashes' },
-  //  { search: /\(/g, replace: '\\(', name: 'parentheses' },
-  //  { search: /\)/g, replace: '\\)', name: 'parentheses' },
-  //  { search: /\[/g, replace: '\\[', name: 'square brackets' },
-  //  { search: /\]/g, replace: '\\]', name: 'square brackets' },
-  //  { search: /</g, replace: '&lt;', name: 'angle brackets' },
-  //  { search: />/g, replace: '&gt;', name: 'angle brackets' },
-  //  { search: /_/g, replace: '\\_', name: 'underscores' },
-
-  /*
-
-  TODO: this site did way better, follow their pattern re: markdown
-  https://jsonformatter.curiousconcept.com/#
-  Fixed the problems to make valid JSON!
-
-  const replacements = [
-    { search: /`/g, replace: '\\`', name: 'codeblocks' },
-    { search: /“/g, replace: '\\"', name: 'quotes' },
-    { search: /”/g, replace: '\\"', name: 'quotes' },
-    { search: /\n/g, replace: '\\n', name: 'newlines' },
-    { search: /\[/g, replace: '\\[', name: 'square brackets' },
-    { search: /\[/g, replace: '\\]', name: 'square brackets' },
-  ] satisfies ReplacementList[];
-
-  function escapeText(text: string) {
-    return replacements.reduce(
-      (escaped, { search, replace }) => escaped.replace(search, replace),
-      text
-    );
-  }
-
-  */
 
   return (
     <>
@@ -290,47 +248,32 @@ export default function PostNews() {
                 mb={6}
                 children={finalPost}
               ></Code>
-              <Button
+              <Box
+                display="flex"
+                flexDir={['column-reverse', 'row']}
+                alignContent="center"
+                alignItems="space-between"
+                justifyContent="space-between"
                 mb={6}
-                mr={3}
-                py={3}
-                whiteSpace="normal"
-                size="md"
-                onClick={copyText}
-                alignSelf="flex-end"
-                borderRadius="xl"
               >
-                Copy to Clipboard
-              </Button>
-              <Text>
-                You can upload an inscription using ord or through a service like{' '}
-                <ChakraLink
-                  href="https://gamma.io/ordinals"
-                  isExternal
+                <Text>
+                  You can upload an inscription using ord or through a service that supports text
+                  inscriptions.
+                </Text>
+                <Button
+                  mx={3}
+                  mb={[6, 0]}
+                  whiteSpace="nowrap"
+                  onClick={copyText}
+                  minW="fit-content"
+                  borderRadius="xl"
                 >
-                  Gamma
-                </ChakraLink>{' '}
-                and{' '}
-                <ChakraLink
-                  href="https://ordinalsbot.com/"
-                  isExternal
-                >
-                  OrdinalsBot
-                </ChakraLink>
-                , or see the{' '}
-                <ChakraLink
-                  href="https://github.com/neu-fi/awesome-ordinals"
-                  isExternal
-                >
-                  Ordinals Awesome List
-                </ChakraLink>{' '}
-                for even more options.{' '}
-              </Text>
+                  Copy to Clipboard
+                </Button>
+              </Box>
               <Alert
                 status="warning"
-                py={[0, 6]}
-                my={[0, 6]}
-                minH={['180px', 'fit-content']}
+                flexShrink={0}
               >
                 <AlertIcon />
                 <AlertDescription>
@@ -344,9 +287,70 @@ export default function PostNews() {
                   before using a tool or service!
                 </AlertDescription>
               </Alert>
+              <ButtonGroup
+                spacing={[0, 0, 6]}
+                my={6}
+                flexDir={['column', 'column', 'row']}
+                alignItems="center"
+                justifyContent="center"
+              >
+                <Button
+                  borderRadius="xl"
+                  as={ChakraLink}
+                  href="https://gamma.io/ordinals"
+                  isExternal
+                  className="link-button"
+                  minW={['100%', '75%', 'fit-content']}
+                  mb={[6, 6, 0]}
+                >
+                  Gamma
+                </Button>
+                <Button
+                  borderRadius="xl"
+                  as={ChakraLink}
+                  href="https://ordinalsbot.com/"
+                  isExternal
+                  className="link-button"
+                  minW={['100%', '75%', 'fit-content']}
+                  mb={[6, 6, 0]}
+                >
+                  OrdinalsBot
+                </Button>
+                <Button
+                  borderRadius="xl"
+                  as={ChakraLink}
+                  href="https://ordimint.com"
+                  isExternal
+                  className="link-button"
+                  minW={['100%', '75%', 'fit-content']}
+                  mb={[6, 6, 0]}
+                >
+                  Ordimint
+                </Button>
+                <Button
+                  borderRadius="xl"
+                  as={ChakraLink}
+                  href="https://unisat.io/inscribe"
+                  isExternal
+                  className="link-button"
+                  minW={['100%', '75%', 'fit-content']}
+                >
+                  Unisat.io
+                </Button>
+              </ButtonGroup>
+              <Text mb={6}>
+                Use the "plain text" inscription type if you're using a service, or make sure the
+                file's type is `.txt` if using the Ordinals CLI.
+              </Text>
               <Text>
-                Use the "plain text" inscription type if you're using Gamma, or make sure the file's
-                type is `.txt` if using the Ordinals CLI.
+                See the{' '}
+                <ChakraLink
+                  href="https://github.com/neu-fi/awesome-ordinals"
+                  isExternal
+                >
+                  Ordinals Awesome List
+                </ChakraLink>{' '}
+                for even more inscription services.{' '}
               </Text>
             </ModalBody>
             <ModalFooter>
