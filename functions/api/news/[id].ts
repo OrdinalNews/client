@@ -21,6 +21,7 @@ export async function onRequest({ params }): Promise<Response> {
   if (news.author)
     formattedNews += `\n<span style="font-style:italic">Author: ${news.author}</span>`;
   if (news.body) formattedNews += `<hr />\n${md.render(news.body)}`;
+  // TODO: return just md.render(news.body) -> then render on another page?
   return new Response(formattedNews, {
     status: 200,
     headers: { 'Content-Type': 'text/html' },

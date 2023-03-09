@@ -1,7 +1,7 @@
 import { EventContext } from '@cloudflare/workers-types';
 import { createResponse, fetchContentFromOrdinals } from '../../../lib/api-helpers';
 import { Env, InscriptionContent, InscriptionMeta } from '../../../lib/api-types';
-import { getOrFetchInscriptionInfo } from '../inscription/[id]';
+import { getOrFetchInscriptionInfo } from '../info/[id]';
 
 export async function onRequest(context: EventContext<Env, any, any>): Promise<Response> {
   try {
