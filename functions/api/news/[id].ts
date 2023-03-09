@@ -16,13 +16,14 @@ export async function onRequest({ params }): Promise<Response> {
     body: content.body,
     author: content.author,
   };
+  const htmlStart = `<html><head><title>${news.title} - Ordinal News Standard</title><style>body { background-color: #000; color: #fff; font-weight: 350; line-height: 1.6; font-size: 1.5em; } body img { filter: brightness(.8) contrast(1.2); } a, a:active, a:visited { color: #1eaab4 } a:hover { color: #2ad0db }</style></head><body>`;
   let formattedNews = `<h1>${news.title}</h1>`;
-  if (news.url) formattedNews += `\nURL: <a href="${news.url}">${news.url}</a>`;
-  if (news.author)
-    formattedNews += `\n<span style="font-style:italic">Author: ${news.author}</span>`;
+  if (news.author) formattedNews += `<span style="font-style:italic">Author: ${news.author}</span>`;
+  if (news.url) formattedNews += `<br /><a href="${news.url}">${news.url}</a>`;
   if (news.body) formattedNews += `<hr />\n${md.render(news.body)}`;
+  const htmlEnd = `</body></html>`;
   // TODO: return just md.render(news.body) -> then render on another page?
-  return new Response(formattedNews, {
+  return new Response(htmlStart + formattedNews + htmlEnd, {
     status: 200,
     headers: { 'Content-Type': 'text/html' },
   });
