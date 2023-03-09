@@ -335,7 +335,7 @@ export default function PostNews() {
                   className="link-button"
                   minW={['100%', '75%', 'fit-content']}
                 >
-                  Unisat.io
+                  UniSat
                 </Button>
               </ButtonGroup>
               <Text mb={6}>
