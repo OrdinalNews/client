@@ -250,19 +250,19 @@ export default function PostNews() {
               ></Code>
               <Box
                 display="flex"
-                flexDir={['column', 'row']}
+                flexDir={['column-reverse', 'row']}
                 alignContent="center"
                 alignItems="space-between"
                 justifyContent="space-between"
+                mb={6}
               >
                 <Text>
                   You can upload an inscription using ord or through a service that supports text
                   inscriptions.
                 </Text>
                 <Button
-                  mb={6}
-                  mr={3}
-                  py={3}
+                  mx={3}
+                  mb={[6, 0]}
                   whiteSpace="nowrap"
                   onClick={copyText}
                   minW="fit-content"
@@ -273,9 +273,7 @@ export default function PostNews() {
               </Box>
               <Alert
                 status="warning"
-                py={[0, 6]}
-                my={[0, 6]}
-                minH={['180px', 'fit-content']}
+                flexShrink={0}
               >
                 <AlertIcon />
                 <AlertDescription>
@@ -290,7 +288,6 @@ export default function PostNews() {
                 </AlertDescription>
               </Alert>
               <ButtonGroup
-                borderRadius="xl"
                 spacing={[0, 0, 6]}
                 my={6}
                 flexDir={['column', 'column', 'row']}
@@ -298,6 +295,7 @@ export default function PostNews() {
                 justifyContent="center"
               >
                 <Button
+                  borderRadius="xl"
                   as={ChakraLink}
                   href="https://gamma.io/ordinals"
                   isExternal
@@ -308,6 +306,7 @@ export default function PostNews() {
                   Gamma
                 </Button>
                 <Button
+                  borderRadius="xl"
                   as={ChakraLink}
                   href="https://ordinalsbot.com/"
                   isExternal
@@ -318,6 +317,7 @@ export default function PostNews() {
                   OrdinalsBot
                 </Button>
                 <Button
+                  borderRadius="xl"
                   as={ChakraLink}
                   href="https://ordimint.com"
                   isExternal
@@ -328,6 +328,7 @@ export default function PostNews() {
                   Ordimint
                 </Button>
                 <Button
+                  borderRadius="xl"
                   as={ChakraLink}
                   href="https://unisat.io/inscribe"
                   isExternal
