@@ -1,5 +1,5 @@
 import { EventContext } from '@cloudflare/workers-types';
-import { createResponse, fetchInfoFromOrdApi } from '../../../lib/api-helpers';
+import { createResponse, fetchInfoFromHiro, fetchInfoFromOrdApi } from '../../../lib/api-helpers';
 import { Env, InscriptionInfo, InscriptionMeta } from '../../../lib/api-types';
 
 export async function onRequest(context: EventContext<Env, any, any>): Promise<Response> {
@@ -42,7 +42,9 @@ export async function getOrFetchInscriptionInfo(env: Env, id: string) {
     return kvInfo;
   }
   // look up info if not found
-  const info = await fetchInfoFromOrdApi(id).catch(() => undefined);
+  const info = await fetchInfoFromHiro(id).catch(async () => {
+    return await fetchInfoFromOrdApi(id).catch(() => undefined);
+  });
   if (info === undefined || Object.keys(info).length === 0) {
     throw new Error(`Inscription info not found for ${id}`);
   }

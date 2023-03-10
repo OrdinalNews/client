@@ -1,5 +1,9 @@
 import { EventContext } from '@cloudflare/workers-types';
-import { createResponse, fetchContentFromOrdinals } from '../../../lib/api-helpers';
+import {
+  createResponse,
+  fetchContentFromHiro,
+  fetchContentFromOrdinals,
+} from '../../../lib/api-helpers';
 import { Env, InscriptionContent, InscriptionMeta } from '../../../lib/api-types';
 import { getOrFetchInscriptionInfo } from '../info/[id]';
 
@@ -8,10 +12,6 @@ export async function onRequest(context: EventContext<Env, any, any>): Promise<R
     // setup and config
     const { env } = context;
     const id = String(context.params.id);
-    // option 1: return content as an object with metadata
-    // return createResponse(await getOrFetchInscriptionContent(env, id));
-    // option 2: return content directly
-    // TODO: swallowing errors here
     const contentData = await getOrFetchInscriptionContent(env, id).catch(err => {
       console.log(`getOrFetchInscriptionContent err: ${err}`);
       return undefined;
@@ -36,8 +36,6 @@ export async function onRequest(context: EventContext<Env, any, any>): Promise<R
   }
 }
 
-// TODO: LEFT OFF WITH TEXT WORKING
-// BUT IMAGES ARE NOT?
 export async function fetchContentFromKV(
   env: Env,
   id: string
@@ -74,13 +72,12 @@ export async function getOrFetchInscriptionContent(env: Env, id: string) {
   }
   // look up content if not found
   // const mimeType = info.content_type.split(';')[0];
-  const content = await fetchContentFromOrdinals(id).catch(() => undefined);
+  const content = await fetchContentFromHiro(id).catch(async () => {
+    return await fetchContentFromOrdinals(id).catch(() => undefined);
+  });
   if (content === undefined || content.body === null) {
     throw new Error(`Inscription content not found for ID: ${id}`);
   }
-  //let { readable, writable } = new TransformStream();
-  //content.body.pipeTo(writable);
-
   // build metadata based on info
   const metadata: InscriptionMeta = {
     id: info.id,

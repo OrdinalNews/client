@@ -29,6 +29,13 @@ export type OrdApiInscription = {
 };
 
 // returned from api.hiro.so
+export type HiroApiResponse = {
+  limit: number;
+  offset: number;
+  total: number;
+  results: HiroApiInscription[];
+};
+
 export type HiroApiInscription = {
   id: string;
   number: number;
@@ -37,18 +44,19 @@ export type HiroApiInscription = {
   genesis_block_height: number;
   genesis_block_hash: string;
   genesis_tx_id: string;
-  genesis_fee: string; // number?
+  genesis_fee: string;
   genesis_timestamp: number;
+  tx_id: string;
   location: string;
   output: string;
-  value: string; // is this the content?
-  offset: string; // number?
-  sat_ordinal: string; // number?
+  value: string;
+  offset: string;
+  sat_ordinal: string;
   sat_rarity: string;
   sat_coinbase_height: number;
   mime_type: string;
   content_type: string;
-  content_length: 59;
+  content_length: number;
   timestamp: number;
 };
 
