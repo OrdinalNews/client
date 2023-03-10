@@ -19,7 +19,7 @@ export default function RootIndex() {
         fontSize="xl"
         mb={8}
       >
-        Permanently inscribing news and topics of discussion to Bitcoin.
+        Permanently inscribe news and topics of discussion to Bitcoin.
       </Text>
       <Box
         display="flex"
