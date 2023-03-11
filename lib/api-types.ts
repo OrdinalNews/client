@@ -3,7 +3,8 @@ import { KVNamespace } from '@cloudflare/workers-types';
 // KV binding
 export interface Env {
   ORD_NEWS_INDEX: KVNamespace;
-  PREVIEW: boolean;
+  PREVIEW: string;
+  CF_PAGES_BRANCH: string;
 }
 
 // returned from ordapi.xyz

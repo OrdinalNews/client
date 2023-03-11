@@ -42,9 +42,10 @@ export async function getOrFetchInscriptionInfo(env: Env, id: string) {
     return kvInfo;
   }
   // look up info if not found
-  const info = await fetchInfoFromHiro(id).catch(async () => {
-    return await fetchInfoFromOrdApi(id).catch(() => undefined);
-  });
+  let info = await fetchInfoFromHiro(id).catch(() => undefined);
+  if (info === undefined) {
+    info = await fetchInfoFromOrdApi(id).catch(() => undefined);
+  }
   if (info === undefined || Object.keys(info).length === 0) {
     throw new Error(`Inscription info not found for ${id}`);
   }

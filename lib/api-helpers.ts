@@ -1,10 +1,5 @@
 import throttledQueue from 'throttled-queue';
-import {
-  HiroApiInscription,
-  HiroApiResponse,
-  InscriptionInfo,
-  OrdApiInscription,
-} from './api-types';
+import { HiroApiInscription, InscriptionInfo, OrdApiInscription } from './api-types';
 
 // throttle to 1 request per second
 const throttle = throttledQueue(1, 1000, true);
@@ -37,7 +32,8 @@ export function createResponse(data: unknown, status = 200) {
 // fetchs hiro api inscription results
 // and formats/returns them as InscriptionInfo
 export async function fetchInfoFromHiro(id: string): Promise<InscriptionInfo> {
-  const url = new URL(`/inscriptions/${id}`, hiroUrlBase);
+  const url = new URL(`/ordinals/v1/inscriptions/${id}`, hiroUrlBase);
+  //console.log(`fetching info: ${url.toString()}`);
   const data = await fetchUrl(url.toString()).catch(() => {});
   if (data === undefined || Object.keys(data).length === 0) {
     throw new Error(`fetchInfoFromHiro: ${url} returned no data`);
@@ -84,7 +80,9 @@ export async function fetchInfoFromOrdApi(id: string): Promise<InscriptionInfo> 
 // fetchs hiro api content results
 export async function fetchContentFromHiro(id: string): Promise<Response> {
   const url = new URL(`/ordinals/v1/inscriptions/${id}/content`, hiroUrlBase);
-  const response = await throttle(() => fetch(url.toString()).catch(() => {}));
+  console.log(`fetching content: ${url.toString()}`);
+  const response = await fetch(url.toString()).catch(() => {});
+  console.log(`fetch complete`);
   if (response === undefined) {
     throw new Error(`fetchContentFromHiro: ${url} returned no data`);
   }
@@ -94,7 +92,7 @@ export async function fetchContentFromHiro(id: string): Promise<Response> {
 // fetches ordinals.com/content results
 export async function fetchContentFromOrdinals(id: string): Promise<Response> {
   const url = new URL(`/content/${id}`, ordinalsUrlBase);
-  const response = await throttle(() => fetch(url.toString()).catch(() => {}));
+  const response = await fetch(url.toString()).catch(() => {});
   // const data = await fetchUrl(url.toString()).catch(() => {});
   if (response === undefined) {
     throw new Error(`fetchContentFromOrdinals: ${url} returned no data`);

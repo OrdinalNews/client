@@ -65,19 +65,25 @@ export async function getOrFetchInscriptionContent(env: Env, id: string) {
   if (kvContent !== undefined) {
     return kvContent;
   }
+  console.log(`id: ${id}`);
   // look up info
+  console.log('fetching info');
   const info = await getOrFetchInscriptionInfo(env, id).catch(() => undefined);
   if (info === undefined || Object.keys(info).length === 0) {
     throw new Error(`Inscription info not found for ${id}`);
   }
   // look up content if not found
-  // const mimeType = info.content_type.split(';')[0];
-  const content = await fetchContentFromHiro(id).catch(async () => {
-    return await fetchContentFromOrdinals(id).catch(() => undefined);
+  console.log('fetching content');
+  let content = await fetchContentFromHiro(id).catch(() => {
+    () => undefined;
   });
+  if (content === undefined) {
+    content = await fetchContentFromOrdinals(id).catch(() => undefined);
+  }
   if (content === undefined || content.body === null) {
     throw new Error(`Inscription content not found for ID: ${id}`);
   }
+  console.log('building metadata');
   // build metadata based on info
   const metadata: InscriptionMeta = {
     id: info.id,
@@ -90,6 +96,7 @@ export async function getOrFetchInscriptionContent(env: Env, id: string) {
   const contentKey = `inscription-${id}-content`;
   const contentResponse = content.clone();
   await env.ORD_NEWS_INDEX.put(contentKey, await content.arrayBuffer(), { metadata });
+  console.log('returning data');
   // return data
   return {
     content: contentResponse,
