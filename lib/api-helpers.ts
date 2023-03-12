@@ -33,7 +33,6 @@ export function createResponse(data: unknown, status = 200) {
 // and formats/returns them as InscriptionInfo
 export async function fetchInfoFromHiro(id: string): Promise<InscriptionInfo> {
   const url = new URL(`/ordinals/v1/inscriptions/${id}`, hiroUrlBase);
-  //console.log(`fetching info: ${url.toString()}`);
   const data = await fetchUrl(url.toString()).catch(() => {});
   if (data === undefined || Object.keys(data).length === 0) {
     throw new Error(`fetchInfoFromHiro: ${url} returned no data`);
@@ -80,9 +79,7 @@ export async function fetchInfoFromOrdApi(id: string): Promise<InscriptionInfo> 
 // fetchs hiro api content results
 export async function fetchContentFromHiro(id: string): Promise<Response> {
   const url = new URL(`/ordinals/v1/inscriptions/${id}/content`, hiroUrlBase);
-  console.log(`fetching content: ${url.toString()}`);
   const response = await fetch(url.toString()).catch(() => {});
-  console.log(`fetch complete`);
   if (response === undefined) {
     throw new Error(`fetchContentFromHiro: ${url} returned no data`);
   }
