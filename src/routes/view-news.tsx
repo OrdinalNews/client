@@ -156,6 +156,7 @@ export default function ViewNews() {
           display="flex"
           flexDir="column"
           justifyContent="space-between"
+          maxW="100%"
         >
           {news.author && <Text>Author: {news.author}</Text>}
           {news.url && (
@@ -168,6 +169,7 @@ export default function ViewNews() {
           )}
         </Box>
         <Button
+          ms={3}
           minW="fit-content"
           onClick={onToggle}
         >
