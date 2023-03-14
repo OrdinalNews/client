@@ -85,6 +85,10 @@ button:focus-visible {
   margin: 0 auto;
 }
 
+.chakra-collapse {
+  overflow: visible !important;
+}
+
 .link-button {
   color: white !important;
 }

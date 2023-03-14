@@ -8,14 +8,12 @@ import {
   Link as ChakraLink,
   SimpleGrid,
   Stat,
-  StatGroup,
-  StatHelpText,
   StatLabel,
   StatNumber,
   Text,
   useDisclosure,
 } from '@chakra-ui/react';
-import { ReactNode, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { InscriptionMeta, OrdinalNews } from '../../lib/api-types';
 import ReactMarkdown from 'react-markdown';
@@ -42,7 +40,7 @@ async function getInscriptionData(
       ...contentData,
     };
   }
-  console.log(`not ok: ${info.status} ${content.status}`);
+  console.log(`getInscriptionData err: ${info.status} ${content.status}`);
   return undefined;
 }
 
@@ -83,13 +81,14 @@ export default function ViewNews() {
   const { isOpen, onToggle } = useDisclosure();
   const query = useQuery();
   const id = query.get('id');
+  const [loading, setLoading] = useState(true);
   const [data, setData] = useState<(InscriptionMeta & OrdinalNews) | undefined>(undefined);
   const [news, setNews] = useState<OrdinalNews | undefined>(undefined);
 
   useEffect(() => {
     if (id) {
       getInscriptionData(id).then(data => {
-        console.log(`data: ${JSON.stringify(data)}`);
+        setLoading(false);
         if (data === undefined) return;
         setData(data);
         // extract news values as InscriptionMeta
@@ -113,8 +112,17 @@ export default function ViewNews() {
       <Container>
         <Heading>No Inscription ID</Heading>
         <Text>Unable to load news inscription.</Text>
-        <Text>Please provide the ID as a query parameter,</Text>
-        <Link to="/">or click this link to return home.</Link>
+        <Text>Please provide the ID as a query parameter, or</Text>
+        <Link to="/">Click this link to return home.</Link>
+      </Container>
+    );
+  }
+
+  if (loading) {
+    return (
+      <Container>
+        <Heading>Loading inscription data...</Heading>
+        <Text>ID: {id}</Text>
       </Container>
     );
   }
@@ -125,7 +133,7 @@ export default function ViewNews() {
         <Heading>Unable to Load</Heading>
         <Text>Unable to load news inscription.</Text>
         <Text>ID: {id}</Text>
-        <Link to="/">click this link to return home.</Link>
+        <Link to="/">Click this link to return home.</Link>
       </Container>
     );
   }
@@ -135,12 +143,14 @@ export default function ViewNews() {
       display="flex"
       flexDir="column"
       textAlign="left"
+      minH="100vh"
     >
       <Heading textAlign="center">{news.title}</Heading>
       <Box
         display="flex"
         flexDir={['column', 'column', 'row']}
         alignItems="center"
+        justifyContent="space-between"
       >
         <Box
           display="flex"
@@ -164,7 +174,6 @@ export default function ViewNews() {
           See Details
         </Button>
       </Box>
-
       <Collapse
         in={isOpen}
         animateOpacity
@@ -179,7 +188,7 @@ export default function ViewNews() {
             stat={data.id}
           />
           <StatsCard
-            title="Inscription Number"
+            title="Inscription #"
             stat={data.number}
           />
           <StatsCard
@@ -195,7 +204,7 @@ export default function ViewNews() {
             stat={data.content_length}
           />
           <StatsCard
-            title="Genesis Block Height"
+            title="Block Height"
             stat={data.genesis_block_height}
           />
           <StatsCard
@@ -203,7 +212,7 @@ export default function ViewNews() {
             stat={data.genesis_tx_id}
           />
           <StatsCard
-            title="Genesis Block Timestamp"
+            title="Timestamp"
             stat={data.timestamp}
           />
           {news.authorAddress && (
@@ -239,7 +248,3 @@ export default function ViewNews() {
     </Container>
   );
 }
-
-// stats using info
-
-// display reading with content
