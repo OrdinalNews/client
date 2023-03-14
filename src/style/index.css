@@ -97,6 +97,10 @@ button:focus-visible {
   color: #f7931a;
 }
 
+.ord-news {
+  text-align: left;
+}
+
 /*
 bright: #1eaab4
 muted: #2ad0db

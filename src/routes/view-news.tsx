@@ -8,10 +8,13 @@ import {
   Text,
   useDisclosure,
 } from '@chakra-ui/react';
-import MarkdownIt from 'markdown-it';
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { InscriptionMeta, OrdinalNews } from '../../lib/api-types';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
+import ChakraUIRenderer from 'chakra-ui-markdown-renderer';
 
 function useQuery() {
   const { search } = useLocation();
@@ -37,7 +40,6 @@ async function getInscriptionData(
 }
 
 export default function ViewNews() {
-  const md = new MarkdownIt();
   const { isOpen, onToggle } = useDisclosure();
   const query = useQuery();
   const id = query.get('id');
@@ -129,7 +131,14 @@ export default function ViewNews() {
             orientation="horizontal"
             my={3}
           />
-          <Text>{md.render(news.body)}</Text>
+          <ReactMarkdown
+            components={ChakraUIRenderer()}
+            children={news.body}
+            remarkPlugins={[remarkGfm]}
+            rehypePlugins={[rehypeRaw]}
+            className="ord-news"
+            linkTarget="_blank"
+          ></ReactMarkdown>
         </>
       )}
     </Container>
