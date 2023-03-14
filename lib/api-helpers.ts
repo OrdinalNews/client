@@ -8,6 +8,10 @@ import {
   OrdinalNews,
 } from './api-types';
 
+/////////////////////////
+// GENERAL
+/////////////////////////
+
 // 2 requests per second
 const throttle = throttledQueue(1, 500, true);
 
@@ -36,7 +40,11 @@ export function createResponse(data: unknown, status = 200) {
   });
 }
 
-// GETTER FOR ORDINAL ID
+/////////////////////////
+// GETTERS
+/////////////////////////
+
+// used by API with KV support through Env
 export async function getInscription(
   env: Env,
   id: string
@@ -104,6 +112,10 @@ export async function getInscription(
   };
 }
 
+/////////////////////////
+// FETCH INFO
+/////////////////////////
+
 // fetch inscription data from Hiro
 // returns metadata for KV key
 export async function fetchMetaFromHiro(id: string): Promise<InscriptionMeta> {
@@ -152,6 +164,10 @@ export async function fetchMetaFromOrdApi(id: string): Promise<InscriptionMeta> 
   };
   return metadata;
 }
+
+/////////////////////////
+// FETCH CONTENT
+/////////////////////////
 
 // fetchs hiro api content results
 export async function fetchContentFromHiro(id: string): Promise<Response> {
