@@ -2,6 +2,9 @@ import { KVNamespace } from '@cloudflare/workers-types';
 
 // KV binding
 export interface Env {
+  ORD_DATA: KVNamespace;
+  ORD_LIST: KVNamespace;
+  ORD_NEWS: KVNamespace;
   ORD_NEWS_INDEX: KVNamespace;
   PREVIEW: string;
   CF_PAGES_BRANCH: string;
@@ -69,32 +72,27 @@ export type OrdinalNews = {
   url?: string;
   body?: string;
   author?: string;
+  authorAddress?: string;
+  signature?: string;
 };
 
-// for storage in Cloudflare KV
-// can be populated by either API
-// used to link different key types
+// metadata for inscription stored in KV
 export type InscriptionMeta = {
+  // inscription
   id: string;
   number: number;
+  address: string;
   content_type: string;
   content_length: number;
+  genesis_block_height: number; // "genesis height" | genesis_block_height
+  genesis_tx_id: string; // 'genesis transaction' | genesis_tx_id
+  timestamp: string; // timestamp in both, but string vs date
+  // news standard
   last_updated: string;
+  news_number?: number;
+  news_author?: string;
 };
 
 export type InscriptionContent = {
   content: Response;
-};
-
-// for storage in Cloudflare KV
-// can be populated by either API
-export type InscriptionInfo = {
-  id: string; // same in both
-  number: number; // inscrpition_number | number
-  address: string; // same in both
-  content_type: string; // same in both? or "content type" | mime_type
-  content_length: number; // "content length" | content_length
-  genesis_block_height: number; // "genesis height" | genesis_block_height
-  genesis_tx_id: string; // 'genesis transaction' | genesis_tx_id
-  timestamp: string; // timestamp in both, but string vs date
 };

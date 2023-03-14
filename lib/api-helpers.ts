@@ -1,8 +1,15 @@
 import throttledQueue from 'throttled-queue';
-import { HiroApiInscription, InscriptionInfo, OrdApiInscription } from './api-types';
+import {
+  Env,
+  HiroApiInscription,
+  InscriptionContent,
+  InscriptionMeta,
+  OrdApiInscription,
+  OrdinalNews,
+} from './api-types';
 
-// throttle to 1 request per second
-const throttle = throttledQueue(1, 1000, true);
+// 2 requests per second
+const throttle = throttledQueue(1, 500, true);
 
 export async function fetchUrl(url: string) {
   const response = await throttle(() => fetch(url));
@@ -18,9 +25,9 @@ export async function fetchUrl(url: string) {
 }
 
 // base API definitions
-export const ordinalsUrlBase = new URL('https://ordinals.com/');
-export const ordApiUrlBase = new URL('https://ordapi.xyz/');
-export const hiroUrlBase = new URL('https://api.hiro.so/');
+export const ordinalsUrl = new URL('https://ordinals.com/');
+export const ordApiUrl = new URL('https://ordapi.xyz/');
+export const hiroApiUrl = new URL('https://api.hiro.so/');
 
 // takes data and status code and returns a Response object
 export function createResponse(data: unknown, status = 200) {
@@ -29,41 +36,110 @@ export function createResponse(data: unknown, status = 200) {
   });
 }
 
-// fetchs hiro api inscription results
-// and formats/returns them as InscriptionInfo
-export async function fetchInfoFromHiro(id: string): Promise<InscriptionInfo> {
-  const url = new URL(`/ordinals/v1/inscriptions/${id}`, hiroUrlBase);
+// GETTER FOR ORDINAL ID
+export async function getInscription(
+  env: Env,
+  id: string
+): Promise<(InscriptionMeta & InscriptionContent) | undefined> {
+  try {
+    // try to get from KV
+    const kvData = await env.ORD_LIST.getWithMetadata(id, { type: 'arrayBuffer' });
+    if (kvData.metadata !== null && kvData.value !== null) {
+      const metadata = kvData.metadata as InscriptionMeta;
+      const content = kvData.value as ArrayBuffer;
+      return {
+        content: new Response(content),
+        ...metadata,
+      };
+    }
+  } catch (err) {
+    console.log(`getInscription err: ${err}`);
+  }
+  // if not in KV, fetch metadata:
+  let metadata = await fetchMetaFromHiro(id).catch(() => undefined);
+  if (metadata === undefined) {
+    metadata = await fetchMetaFromOrdApi(id).catch(() => undefined);
+  }
+  if (metadata === undefined || Object.keys(metadata).length === 0) {
+    throw new Error(`getInscription: metadata not found for ${id}`);
+  }
+  // then fetch content:
+  let content = await fetchContentFromHiro(id).catch(() => undefined);
+  if (content === undefined) {
+    content = await fetchContentFromOrdinals(id).catch(() => undefined);
+  }
+  if (content === undefined || Object.keys(content).length === 0) {
+    throw new Error(`getInscription: content not found for ${id}`);
+  }
+  // test if valid by Ordinals News Standard
+  const newsContent = content.clone();
+  const contentString = new TextDecoder().decode(await newsContent.arrayBuffer());
+  let news: OrdinalNews;
+  try {
+    // parse data and store in news KV
+    const contentObj = JSON.parse(contentString);
+    news = {
+      p: contentObj.p,
+      op: contentObj.op,
+      title: contentObj.title,
+      url: contentObj.url,
+      body: contentObj.body,
+      author: contentObj.author,
+      authorAddress: contentObj.authorAddress,
+      signature: contentObj.signature,
+    };
+    // check that it's a valid news inscription
+    if (news.p === 'ons' && news.title) {
+      const kvContent = content.clone();
+      await env.ORD_NEWS.put(id, await kvContent.arrayBuffer(), { metadata });
+    }
+  } catch (err) {
+    console.log(`Not a valid news inscription: ${id}\n${err}`);
+  }
+  // store in KV
+  await env.ORD_LIST.put(id, await content.arrayBuffer(), { metadata });
+  return {
+    content,
+    ...metadata,
+  };
+}
+
+// fetch inscription data from Hiro
+// returns metadata for KV key
+export async function fetchMetaFromHiro(id: string): Promise<InscriptionMeta> {
+  const url = new URL(`/ordinals/v1/inscriptions/${id}`, hiroApiUrl);
   const data = await fetchUrl(url.toString()).catch(() => {});
   if (data === undefined || Object.keys(data).length === 0) {
-    throw new Error(`fetchInfoFromHiro: ${url} returned no data`);
+    throw new Error(`fetchMetaFromHiro: returned no data: ${url}`);
   }
   const apiData = data as HiroApiInscription;
-  const info: InscriptionInfo = {
+  const metadata: InscriptionMeta = {
     id: apiData.id,
     number: apiData.number,
     address: apiData.address,
     content_type: apiData.content_type,
     content_length: apiData.content_length,
     genesis_block_height: apiData.genesis_block_height,
-    genesis_tx_id: apiData.tx_id,
+    genesis_tx_id: apiData.genesis_tx_id,
     timestamp: new Date(apiData.timestamp).toISOString(),
+    last_updated: new Date().toISOString(),
   };
-  return info;
+  return metadata;
 }
 
-// fetches ordapi.xyz inscription results
-// and formats/returns them as InscriptionInfo
-export async function fetchInfoFromOrdApi(id: string): Promise<InscriptionInfo> {
-  const url = new URL(`/inscription/${id}`, ordApiUrlBase);
+// fetch inscription data from ordapi.xyz
+// returns metadata for KV key
+export async function fetchMetaFromOrdApi(id: string): Promise<InscriptionMeta> {
+  const url = new URL(`/inscription/${id}`, ordApiUrl);
   const data = await fetchUrl(url.toString()).catch(() => {});
   if (data === undefined || Object.keys(data).length === 0) {
-    throw new Error(`fetchInfoFromOrdApi: ${url} returned no data`);
+    throw new Error(`fetchMetaFromOrdApi: returned no data: ${url}`);
   }
   const apiData = data as OrdApiInscription;
   const txid = apiData['genesis transaction'].split('/').pop();
   const contentLength = apiData['content length'].replace(' bytes', '');
   const genesisBlock = apiData['genesis height'].replace('/block/', '');
-  const info: InscriptionInfo = {
+  const metadata: InscriptionMeta = {
     id: apiData.id,
     number: apiData.inscription_number,
     address: apiData.address,
@@ -72,39 +148,27 @@ export async function fetchInfoFromOrdApi(id: string): Promise<InscriptionInfo> 
     genesis_block_height: Number(genesisBlock),
     genesis_tx_id: txid ? txid : apiData['genesis transaction'],
     timestamp: new Date(apiData.timestamp).toISOString(),
+    last_updated: new Date().toISOString(),
   };
-  return info;
+  return metadata;
 }
 
 // fetchs hiro api content results
 export async function fetchContentFromHiro(id: string): Promise<Response> {
-  const url = new URL(`/ordinals/v1/inscriptions/${id}/content`, hiroUrlBase);
-  const response = await fetch(url.toString()).catch(() => {});
+  const url = new URL(`/ordinals/v1/inscriptions/${id}/content`, hiroApiUrl);
+  const response = await fetch(url.toString()).catch(() => undefined);
   if (response === undefined) {
-    throw new Error(`fetchContentFromHiro: ${url} returned no data`);
+    throw new Error(`fetchContentFromHiro: returned no data: ${url}`);
   }
   return response;
 }
 
 // fetches ordinals.com/content results
 export async function fetchContentFromOrdinals(id: string): Promise<Response> {
-  const url = new URL(`/content/${id}`, ordinalsUrlBase);
-  const response = await fetch(url.toString()).catch(() => {});
-  // const data = await fetchUrl(url.toString()).catch(() => {});
+  const url = new URL(`/content/${id}`, ordinalsUrl);
+  const response = await fetch(url.toString()).catch(() => undefined);
   if (response === undefined) {
-    throw new Error(`fetchContentFromOrdinals: ${url} returned no data`);
+    throw new Error(`fetchContentFromOrdinals: returned no data: ${url}`);
   }
   return response;
 }
-
-// distinguish content-type vs mime-type
-
-// inscription-NUMBER-info = InscriptionInfo
-//   metadata: id, number, content-type, content-length, lastUpdated
-//   value: InscriptionInfo type
-// inscription-NUMBER-content
-//   metadata: id, number, content-type, content-length, lastUpdated
-//   value: copy of data from ordinals.com/content
-// inscription-NUMBER-details
-//   metadata: id, number, content-type, content-length, lastUpdated
-//   value: tags, categories, quality, etc (anything used client-side or opinionated)

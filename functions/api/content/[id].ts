@@ -71,9 +71,7 @@ export async function getOrFetchInscriptionContent(env: Env, id: string) {
     throw new Error(`Inscription info not found for ${id}`);
   }
   // look up content if not found
-  let content = await fetchContentFromHiro(id).catch(() => {
-    () => undefined;
-  });
+  let content = await fetchContentFromHiro(id).catch(() => undefined);
   if (content === undefined) {
     content = await fetchContentFromOrdinals(id).catch(() => undefined);
   }
@@ -84,8 +82,12 @@ export async function getOrFetchInscriptionContent(env: Env, id: string) {
   const metadata: InscriptionMeta = {
     id: info.id,
     number: info.number,
+    address: info.address,
     content_type: info.content_type,
     content_length: info.content_length,
+    genesis_block_height: info.genesis_block_height,
+    genesis_tx_id: info.genesis_tx_id,
+    timestamp: info.timestamp,
     last_updated: new Date().toISOString(),
   };
   // store data in KV for next query
