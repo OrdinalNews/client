@@ -73,11 +73,14 @@ export async function getInscription(
   }
   console.log(`metadata: ${JSON.stringify(metadata)}`);
   // then fetch content:
+  console.log(`fetching content from hiro: ${id}`);
   let content = await fetchContentFromHiro(id).catch(() => undefined);
   if (content === undefined) {
+    console.log(`fetching content from ordinals: ${id}`);
     content = await fetchContentFromOrdinals(id).catch(() => undefined);
   }
   if (content === undefined || Object.keys(content).length === 0) {
+    console.log(`still no data?`);
     throw new Error(`getInscription: content not found for ${id}`);
   }
   console.log(`content: ${JSON.stringify(content)}`);
