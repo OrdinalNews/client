@@ -75,15 +75,22 @@ export async function getInscription(
   // then fetch content:
   console.log(`fetching content from hiro: ${id}`);
   let content = await fetchContentFromHiro(id).catch(() => undefined);
+  console.log(`content: ${content}`);
+
   if (content === undefined) {
     console.log(`fetching content from ordinals: ${id}`);
     content = await fetchContentFromOrdinals(id).catch(() => undefined);
+    console.log(`content: ${content}`);
   }
-  if (content === undefined || Object.keys(content).length === 0) {
+  if (content === undefined) {
     console.log(`still no data?`);
+    console.log(`content: ${content}`);
     throw new Error(`getInscription: content not found for ${id}`);
   }
   console.log(`content: ${JSON.stringify(content)}`);
+  console.log(`response: ${typeof content}`);
+  console.log(`status: ${content.status}`);
+  console.log(`bodyUsed: ${content.bodyUsed}`);
   // test if valid by Ordinals News Standard
   const newsContent = content.clone();
   const contentString = new TextDecoder().decode(await newsContent.arrayBuffer());
