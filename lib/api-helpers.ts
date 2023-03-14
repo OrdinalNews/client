@@ -71,26 +71,14 @@ export async function getInscription(
   if (metadata === undefined || Object.keys(metadata).length === 0) {
     throw new Error(`getInscription: metadata not found for ${id}`);
   }
-  console.log(`metadata: ${JSON.stringify(metadata)}`);
   // then fetch content:
-  console.log(`fetching content from hiro: ${id}`);
   let content = await fetchContentFromHiro(id).catch(() => undefined);
-  console.log(`content: ${content}`);
-
   if (content === undefined) {
-    console.log(`fetching content from ordinals: ${id}`);
     content = await fetchContentFromOrdinals(id).catch(() => undefined);
-    console.log(`content: ${content}`);
   }
   if (content === undefined) {
-    console.log(`still no data?`);
-    console.log(`content: ${content}`);
     throw new Error(`getInscription: content not found for ${id}`);
   }
-  console.log(`content: ${JSON.stringify(content)}`);
-  console.log(`response: ${typeof content}`);
-  console.log(`status: ${content.status}`);
-  console.log(`bodyUsed: ${content.bodyUsed}`);
   // test if valid by Ordinals News Standard
   const newsContent = content.clone();
   const contentString = new TextDecoder().decode(await newsContent.arrayBuffer());
@@ -132,7 +120,6 @@ export async function getInscription(
 // returns metadata for KV key
 export async function fetchMetaFromHiro(id: string): Promise<InscriptionMeta> {
   const url = new URL(`/ordinals/v1/inscriptions/${id}`, hiroApiUrl);
-  console.log(`url: ${url}`);
   const data = await fetchUrl(url.toString()).catch(() => {});
   if (data === undefined || Object.keys(data).length === 0) {
     throw new Error(`fetchMetaFromHiro: returned no data: ${url}`);
@@ -156,7 +143,6 @@ export async function fetchMetaFromHiro(id: string): Promise<InscriptionMeta> {
 // returns metadata for KV key
 export async function fetchMetaFromOrdApi(id: string): Promise<InscriptionMeta> {
   const url = new URL(`/inscription/${id}`, ordApiUrl);
-  console.log(`url: ${url}`);
   const data = await fetchUrl(url.toString()).catch(() => {});
   if (data === undefined || Object.keys(data).length === 0) {
     throw new Error(`fetchMetaFromOrdApi: returned no data: ${url}`);
@@ -186,31 +172,19 @@ export async function fetchMetaFromOrdApi(id: string): Promise<InscriptionMeta> 
 // fetchs hiro api content results
 export async function fetchContentFromHiro(id: string): Promise<Response> {
   const url = new URL(`/ordinals/v1/inscriptions/${id}/content`, hiroApiUrl);
-  console.log(`url: ${url}`);
   const response = await fetch(url.toString()).catch(() => undefined);
   if (response === undefined) {
-    console.log(`response undefined?`);
     throw new Error(`fetchContentFromHiro: returned no data: ${url}`);
   }
-  console.log(`data found and returned`);
-  console.log(`response: ${typeof response}`);
-  console.log(`status: ${response.status}`);
-  console.log(`bodyUsed: ${response.bodyUsed}`);
   return response;
 }
 
 // fetches ordinals.com/content results
 export async function fetchContentFromOrdinals(id: string): Promise<Response> {
   const url = new URL(`/content/${id}`, ordinalsUrl);
-  console.log(`url: ${url}`);
   const response = await fetch(url.toString()).catch(() => undefined);
   if (response === undefined) {
-    console.log(`response undefined?`);
     throw new Error(`fetchContentFromOrdinals: returned no data: ${url}`);
   }
-  console.log(`data found and returned`);
-  console.log(`response: ${typeof response}`);
-  console.log(`status: ${response.status}`);
-  console.log(`bodyUsed: ${response.bodyUsed}`);
   return response;
 }
