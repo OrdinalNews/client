@@ -16,6 +16,6 @@ export async function onRequest(context: EventContext<Env, any, any>): Promise<R
     ) as InscriptionMeta;
     return createResponse(meta);
   } catch (err) {
-    return createResponse(err, 500);
+    return createResponse(`info err: ${err}`, 500);
   }
 }
