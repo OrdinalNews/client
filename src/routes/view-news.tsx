@@ -144,8 +144,9 @@ export default function ViewNews() {
       flexDir="column"
       textAlign="left"
       minH="100vh"
+      maxW="800px"
     >
-      <Heading textAlign="center">{news.title}</Heading>
+      <Heading lineHeight={1}>{news.title}</Heading>
       <Box
         display="flex"
         flexDir={['column', 'column', 'row']}
@@ -157,19 +158,24 @@ export default function ViewNews() {
           flexDir="column"
           justifyContent="space-between"
           maxW="100%"
+          pt={3}
         >
-          {news.author && <Text>Author: {news.author}</Text>}
+          {news.author && <Text pb={3}>Author: {news.author}</Text>}
           {news.url && (
-            <ChakraLink
-              href={news.url}
-              isExternal
-            >
-              {news.url}
-            </ChakraLink>
+            <Text pb={3}>
+              URL:{' '}
+              <ChakraLink
+                href={news.url}
+                isExternal
+              >
+                {news.url}
+              </ChakraLink>
+            </Text>
           )}
         </Box>
         <Button
           ms={3}
+          mb={3}
           minW="fit-content"
           onClick={onToggle}
         >

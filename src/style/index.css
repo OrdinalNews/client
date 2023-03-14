@@ -101,6 +101,14 @@ button:focus-visible {
   color: #f7931a;
 }
 
+.ord-news h1,
+.ord-news h2,
+.ord-news h3,
+.ord-news h4,
+.ord-news h5 {
+  line-height: 1 !important;
+}
+
 /*
 bright: #1eaab4
 muted: #2ad0db
