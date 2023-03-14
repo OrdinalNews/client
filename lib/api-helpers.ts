@@ -182,8 +182,13 @@ export async function fetchContentFromHiro(id: string): Promise<Response> {
   console.log(`url: ${url}`);
   const response = await fetch(url.toString()).catch(() => undefined);
   if (response === undefined) {
+    console.log(`response undefined?`);
     throw new Error(`fetchContentFromHiro: returned no data: ${url}`);
   }
+  console.log(`data found and returned`);
+  console.log(`response: ${typeof response}`);
+  console.log(`status: ${response.status}`);
+  console.log(`bodyUsed: ${response.bodyUsed}`);
   return response;
 }
 
@@ -193,7 +198,12 @@ export async function fetchContentFromOrdinals(id: string): Promise<Response> {
   console.log(`url: ${url}`);
   const response = await fetch(url.toString()).catch(() => undefined);
   if (response === undefined) {
+    console.log(`response undefined?`);
     throw new Error(`fetchContentFromOrdinals: returned no data: ${url}`);
   }
+  console.log(`data found and returned`);
+  console.log(`response: ${typeof response}`);
+  console.log(`status: ${response.status}`);
+  console.log(`bodyUsed: ${response.bodyUsed}`);
   return response;
 }
