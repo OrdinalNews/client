@@ -1,14 +1,21 @@
 import {
+  Box,
   Button,
   Collapse,
   Container,
   Divider,
   Heading,
   Link as ChakraLink,
+  SimpleGrid,
+  Stat,
+  StatGroup,
+  StatHelpText,
+  StatLabel,
+  StatNumber,
   Text,
   useDisclosure,
 } from '@chakra-ui/react';
-import { useEffect, useMemo, useState } from 'react';
+import { ReactNode, useEffect, useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { InscriptionMeta, OrdinalNews } from '../../lib/api-types';
 import ReactMarkdown from 'react-markdown';
@@ -37,6 +44,39 @@ async function getInscriptionData(
   }
   console.log(`not ok: ${info.status} ${content.status}`);
   return undefined;
+}
+
+interface StatsCardProps {
+  title: string;
+  stat: string | number;
+}
+
+function StatsCard(props: StatsCardProps) {
+  const { title, stat } = props;
+  return (
+    <Stat
+      px={{ base: 2, md: 4 }}
+      py={'5'}
+      shadow={'xl'}
+      border={'1px'}
+      borderColor={'gray.600'}
+      rounded={'lg'}
+    >
+      <StatLabel
+        fontWeight={'medium'}
+        isTruncated
+      >
+        {title}
+      </StatLabel>
+
+      <StatNumber
+        fontSize={'md'}
+        fontWeight={'bold'}
+      >
+        {stat}
+      </StatNumber>
+    </Stat>
+  );
 }
 
 export default function ViewNews() {
@@ -94,37 +134,92 @@ export default function ViewNews() {
     <Container
       display="flex"
       flexDir="column"
+      textAlign="left"
     >
+      <Heading textAlign="center">{news.title}</Heading>
+      <Box
+        display="flex"
+        flexDir={['column', 'column', 'row']}
+        alignItems="center"
+      >
+        <Box
+          display="flex"
+          flexDir="column"
+          justifyContent="space-between"
+        >
+          {news.author && <Text>Author: {news.author}</Text>}
+          {news.url && (
+            <ChakraLink
+              href={news.url}
+              isExternal
+            >
+              {news.url}
+            </ChakraLink>
+          )}
+        </Box>
+        <Button
+          minW="fit-content"
+          onClick={onToggle}
+        >
+          See Details
+        </Button>
+      </Box>
+
       <Collapse
         in={isOpen}
         animateOpacity
       >
-        <Heading>Info</Heading>
-        <Text>ID: {data.id}</Text>
-        <Text>Number: {data.number}</Text>
-        <Text>Address: {data.address}</Text>
-        <Text>Content Type: {data.content_type}</Text>
-        <Text>Content Length: {data.content_length}</Text>
-        <Text>Genesis Block Height: {data.genesis_block_height}</Text>
-        <Text>Genesis TXID: {data.genesis_tx_id}</Text>
-        <Text>Timestamp: {data.timestamp}</Text>
+        <SimpleGrid
+          columns={{ base: 1, md: 3 }}
+          spacing={{ base: 5, lg: 8 }}
+          mt={3}
+        >
+          <StatsCard
+            title="Inscription ID"
+            stat={data.id}
+          />
+          <StatsCard
+            title="Inscription Number"
+            stat={data.number}
+          />
+          <StatsCard
+            title="Address"
+            stat={data.address}
+          />
+          <StatsCard
+            title="Content Type"
+            stat={data.content_type}
+          />
+          <StatsCard
+            title="Content Length"
+            stat={data.content_length}
+          />
+          <StatsCard
+            title="Genesis Block Height"
+            stat={data.genesis_block_height}
+          />
+          <StatsCard
+            title="Genesis TXID"
+            stat={data.genesis_tx_id}
+          />
+          <StatsCard
+            title="Genesis Block Timestamp"
+            stat={data.timestamp}
+          />
+          {news.authorAddress && (
+            <StatsCard
+              title="Author Address"
+              stat={news.authorAddress}
+            />
+          )}
+          {news.signature && (
+            <StatsCard
+              title="Author Signature"
+              stat={news.signature}
+            />
+          )}
+        </SimpleGrid>
       </Collapse>
-      <Button onClick={onToggle}>See Details</Button>
-      <Heading>{news.title}</Heading>
-      {news.url && (
-        <Text>
-          URL:{' '}
-          <ChakraLink
-            href={news.url}
-            isExternal
-          >
-            {news.url}
-          </ChakraLink>
-        </Text>
-      )}
-      {news.author && <Text>By {news.author}</Text>}
-      {news.authorAddress && <Text>Author Address: {news.authorAddress}</Text>}
-      {news.signature && <Text>Signature: {news.signature}</Text>}
       {news.body && (
         <>
           <Divider
