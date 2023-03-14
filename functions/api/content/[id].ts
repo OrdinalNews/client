@@ -7,7 +7,7 @@ export async function onRequest(context: EventContext<Env, any, any>): Promise<R
     // setup and config
     const { env } = context;
     const id = String(context.params.id);
-    const inscriptionData = await getInscription(env, id);
+    const inscriptionData = await getInscription(env, id).catch(() => undefined);
     if (
       inscriptionData === undefined ||
       Object.keys(inscriptionData).length === 0 ||
@@ -23,7 +23,6 @@ export async function onRequest(context: EventContext<Env, any, any>): Promise<R
       },
     });
   } catch (err) {
-    console.log(`500 err: ${err}`);
-    return createResponse(err, 500);
+    return createResponse(String(err), 500);
   }
 }

@@ -48,7 +48,7 @@ export function createResponse(data: unknown, status = 200) {
 export async function getInscription(
   env: Env,
   id: string
-): Promise<(InscriptionMeta & InscriptionContent) | undefined> {
+): Promise<InscriptionMeta & InscriptionContent> {
   try {
     // try to get from KV
     const kvData = await env.ORD_LIST.getWithMetadata(id, { type: 'arrayBuffer' });
@@ -120,6 +120,7 @@ export async function getInscription(
 // returns metadata for KV key
 export async function fetchMetaFromHiro(id: string): Promise<InscriptionMeta> {
   const url = new URL(`/ordinals/v1/inscriptions/${id}`, hiroApiUrl);
+  console.log(`url: ${url}`);
   const data = await fetchUrl(url.toString()).catch(() => {});
   if (data === undefined || Object.keys(data).length === 0) {
     throw new Error(`fetchMetaFromHiro: returned no data: ${url}`);
@@ -143,6 +144,7 @@ export async function fetchMetaFromHiro(id: string): Promise<InscriptionMeta> {
 // returns metadata for KV key
 export async function fetchMetaFromOrdApi(id: string): Promise<InscriptionMeta> {
   const url = new URL(`/inscription/${id}`, ordApiUrl);
+  console.log(`url: ${url}`);
   const data = await fetchUrl(url.toString()).catch(() => {});
   if (data === undefined || Object.keys(data).length === 0) {
     throw new Error(`fetchMetaFromOrdApi: returned no data: ${url}`);
@@ -172,6 +174,7 @@ export async function fetchMetaFromOrdApi(id: string): Promise<InscriptionMeta> 
 // fetchs hiro api content results
 export async function fetchContentFromHiro(id: string): Promise<Response> {
   const url = new URL(`/ordinals/v1/inscriptions/${id}/content`, hiroApiUrl);
+  console.log(`url: ${url}`);
   const response = await fetch(url.toString()).catch(() => undefined);
   if (response === undefined) {
     throw new Error(`fetchContentFromHiro: returned no data: ${url}`);
@@ -182,6 +185,7 @@ export async function fetchContentFromHiro(id: string): Promise<Response> {
 // fetches ordinals.com/content results
 export async function fetchContentFromOrdinals(id: string): Promise<Response> {
   const url = new URL(`/content/${id}`, ordinalsUrl);
+  console.log(`url: ${url}`);
   const response = await fetch(url.toString()).catch(() => undefined);
   if (response === undefined) {
     throw new Error(`fetchContentFromOrdinals: returned no data: ${url}`);
