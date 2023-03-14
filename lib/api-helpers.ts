@@ -71,6 +71,7 @@ export async function getInscription(
   if (metadata === undefined || Object.keys(metadata).length === 0) {
     throw new Error(`getInscription: metadata not found for ${id}`);
   }
+  console.log(`metadata: ${JSON.stringify(metadata)}`);
   // then fetch content:
   let content = await fetchContentFromHiro(id).catch(() => undefined);
   if (content === undefined) {
@@ -79,6 +80,7 @@ export async function getInscription(
   if (content === undefined || Object.keys(content).length === 0) {
     throw new Error(`getInscription: content not found for ${id}`);
   }
+  console.log(`content: ${JSON.stringify(content)}`);
   // test if valid by Ordinals News Standard
   const newsContent = content.clone();
   const contentString = new TextDecoder().decode(await newsContent.arrayBuffer());
