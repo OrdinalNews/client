@@ -8,12 +8,12 @@ Visit [inscribe.news](https://inscribe.news) to see it in action!
 
 The API fetches info, content, or news from an inscription ID, grabbing the data from either ordapi.xyz or ordinals.com, then saving it in KV for future requests.
 
-`/api/info/INSCRIPTION_ID` - returns inscription data (all)
-`/api/content/INSCRIPTION_ID` - returns inscription content (all)
-`/api/news/INSCRIPTION_ID` - returns html from news inscription body (news only)
-`/api/data/INSCRIPTION_ID` - returns inscription data and content (news only)
-`/api/data/ord-news` - returns all known news inscriptions in KV
-`/api/data/ord-list` - returns all known inscriptions in KV
+- `/api/info/INSCRIPTION_ID` - returns inscription data (all)
+- `/api/content/INSCRIPTION_ID` - returns inscription content (all)
+- `/api/news/INSCRIPTION_ID` - returns html from news inscription body (news only)
+- `/api/data/INSCRIPTION_ID` - returns inscription data and content (news only)
+- `/api/data/ord-news` - returns all known news inscriptions in KV
+- `/api/data/ord-list` - returns all known inscriptions in KV
 
 ## Development
 
