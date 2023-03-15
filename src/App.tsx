@@ -7,6 +7,7 @@ import RootIndex from './routes/root-index';
 import PostNews from './routes/post-news';
 import ViewNews from './routes/view-news';
 import theme from './style/theme';
+import RecentNews from './routes/recent-news';
 
 const router = createBrowserRouter([
   {
@@ -21,6 +22,10 @@ const router = createBrowserRouter([
   {
     path: '/view-news',
     element: <ViewNews />,
+  },
+  {
+    path: '/recent-news',
+    element: <RecentNews />,
   },
 ]);
 

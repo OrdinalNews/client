@@ -98,14 +98,15 @@ export async function getInscription(
     };
     // check that it's a valid news inscription
     if (news.p === 'ons' && news.title) {
-      const kvContent = content.clone();
-      await env.ORD_NEWS.put(id, await kvContent.arrayBuffer(), { metadata });
+      const kvNewsContent = content.clone();
+      await env.ORD_NEWS.put(id, await kvNewsContent.arrayBuffer(), { metadata });
     }
   } catch (err) {
     console.log(`Not a valid news inscription: ${id}\n${err}`);
   }
   // store in KV
-  await env.ORD_LIST.put(id, await content.arrayBuffer(), { metadata });
+  const kvContent = content.clone();
+  await env.ORD_LIST.put(id, await kvContent.arrayBuffer(), { metadata });
   return {
     content,
     ...metadata,

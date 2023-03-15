@@ -7,9 +7,6 @@ import {
   Heading,
   Link as ChakraLink,
   SimpleGrid,
-  Stat,
-  StatLabel,
-  StatNumber,
   Text,
   useDisclosure,
 } from '@chakra-ui/react';
@@ -20,6 +17,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import ChakraUIRenderer from 'chakra-ui-markdown-renderer';
+import StatsCard from '../components/stats-card';
 
 function useQuery() {
   const { search } = useLocation();
@@ -42,39 +40,6 @@ async function getInscriptionData(
   }
   console.log(`getInscriptionData err: ${info.status} ${content.status}`);
   return undefined;
-}
-
-interface StatsCardProps {
-  title: string;
-  stat: string | number;
-}
-
-function StatsCard(props: StatsCardProps) {
-  const { title, stat } = props;
-  return (
-    <Stat
-      px={{ base: 2, md: 4 }}
-      py={'5'}
-      shadow={'xl'}
-      border={'1px'}
-      borderColor={'gray.600'}
-      rounded={'lg'}
-    >
-      <StatLabel
-        fontWeight={'medium'}
-        isTruncated
-      >
-        {title}
-      </StatLabel>
-
-      <StatNumber
-        fontSize={'md'}
-        fontWeight={'bold'}
-      >
-        {stat}
-      </StatNumber>
-    </Stat>
-  );
 }
 
 export default function ViewNews() {
