@@ -8,16 +8,12 @@ export async function onRequest(context: EventContext<Env, any, any>): Promise<R
     const { env } = context;
     const id = String(context.params.id);
     const inscriptionData = await getInscription(env, id).catch(() => undefined);
-    if (
-      inscriptionData === undefined ||
-      Object.keys(inscriptionData).length === 0 ||
-      inscriptionData.content.body === null
-    ) {
+    if (inscriptionData === undefined || inscriptionData.content.body === null) {
       return createResponse(`Inscription data not found for ${id}`, 404);
     }
+    const content = await inscriptionData.content.text();
     let news: OrdinalNews;
     try {
-      const content = await inscriptionData.content.text();
       const contentObj = JSON.parse(content);
       news = {
         p: contentObj.p,
@@ -30,7 +26,7 @@ export async function onRequest(context: EventContext<Env, any, any>): Promise<R
         signature: contentObj.signature,
       };
     } catch (err) {
-      return createResponse(`Unable to parse news inscription for ${id}\n${String(err)}`, 404);
+      return createResponse(`Unable to parse news inscription for ${id}`, 404);
     }
     const meta = (({ content, ...inscriptionData }) => inscriptionData)(
       inscriptionData

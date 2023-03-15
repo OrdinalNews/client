@@ -7,11 +7,7 @@ export async function onRequest(context: EventContext<Env, any, any>): Promise<R
   const { env } = context;
   const id = String(context.params.id);
   const inscriptionData = await getInscription(env, id);
-  if (
-    inscriptionData === undefined ||
-    Object.keys(inscriptionData).length === 0 ||
-    inscriptionData.content.body === null
-  ) {
+  if (inscriptionData === undefined || inscriptionData.content.body === null) {
     return createResponse(`Inscription content not found for ${id}`, 404);
   }
   const content = await inscriptionData.content.text();
