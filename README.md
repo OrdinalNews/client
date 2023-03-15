@@ -6,7 +6,7 @@ Visit [inscribe.news](https://inscribe.news) to see it in action!
 
 ## API Endpoints
 
-The API fetches info, content, or news from an inscription ID, grabbing the data from either ordapi.xyz or ordinals.com, then saving it in KV for future requests.
+The API fetches info, content, or news from an inscription ID, grabbing the data from the [Hiro Ordinals API](https://github.com/hirosystems/ordinals-api) with either [ordapi.xyz](https://ordapi.xyz) or [ordinals.com](https://ordinals.com) as a fallback, then saving it in KV for future requests.
 
 - `/api/info/INSCRIPTION_ID` - returns inscription data (all)
 - `/api/content/INSCRIPTION_ID` - returns inscription content (all)
