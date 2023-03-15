@@ -8,15 +8,12 @@ Visit [inscribe.news](https://inscribe.news) to see it in action!
 
 The API fetches info, content, or news from an inscription ID, grabbing the data from either ordapi.xyz or ordinals.com, then saving it in KV for future requests.
 
-- `/api/info/INSCRIPTION_ID` - returns inscription data
-- `/api/content/INSCRIPTION_ID` - returns inscription content
-- `/api/news/INSCRIPTION_ID` - returns html from news inscription\*
-- `/api/data` - returns all known keys in KV
-- `/api/reset-data` - deletes all known keys in KV\*\*
-
-_\* this endpoint returns an HTML page as an example, but will change to return just the HTML parsed from the body of the news in the future_
-
-_\*\* this endpoint only works in the preview build, and may change in the future_
+`/api/info/INSCRIPTION_ID` - returns inscription data (all)
+`/api/content/INSCRIPTION_ID` - returns inscription content (all)
+`/api/news/INSCRIPTION_ID` - returns html from news inscription body (news only)
+`/api/data/INSCRIPTION_ID` - returns inscription data and content (news only)
+`/api/data/ord-news` - returns all known news inscriptions in KV
+`/api/data/ord-list` - returns all known inscriptions in KV
 
 ## Development
 
@@ -33,7 +30,7 @@ npx wrangler pages dev dist/
 To develop the site locally with KV enabled:
 
 ```
-npx wrangler pages dev --kv ORD_NEWS_INDEX --local ./public ./dist
+npx wrangler pages dev --kv ORD_LIST --kv ORD_NEWS --kv ORD_DATA --local ./public ./dist
 ```
 
 ### Cloudflare Configuration
@@ -51,21 +48,33 @@ In order to setup the same environment, a few Cloudflare settings need to be ena
 Production:
 
 - NODE_VERSION 17
-- PREVIEW false
 
 Preview:
 
 - NODE_VERSION 17
-- PREVIEW true
 
 #### KV
 
-- create KV namespace: ordinal-news-index
-- create KV namespace: ordinal-news-index-preview
+Create KV namespaces:
+
+- ord-list
+- ord-news
+- ord-data
+- ord-list-preview
+- ord-news-preview
+- ord-data-preview
 
 #### Functions
 
-- Usage model: Unbound
-- KV namespace binding:
-  - Production: ORD_NEWS_INDEX ordinal-news-index
-  - Preview: ORD_NEWS_INDEX ordinal-news-index-preview
+Usage model: Unbound
+
+KV namespace bindings:
+
+- Production:
+  - ORD_LIST = ord-list
+  - ORD_NEWS = ord-news
+  - ORD_DATA = ord-data
+- Preview:
+  - ORD_LIST = ord-list-preview
+  - ORD_NEWS = ord-news-preview
+  - ORD_DATA = ord-data-preview
