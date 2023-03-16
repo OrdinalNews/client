@@ -27,7 +27,7 @@
     "throttled-queue": "^2.1.4"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20230228.0",
+    "@cloudflare/workers-types": "^4.20230307.0",
     "@types/markdown-it": "^12.2.3",
     "@types/react": "^18.0.15",
     "@types/react-dom": "^18.0.6",
