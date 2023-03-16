@@ -58,16 +58,19 @@ export default function ViewNews() {
         setData(data);
         // extract news values as InscriptionMeta
         const { p, op, title, url, body, author, authorAddress, signature } = data;
-        setNews({
-          p,
-          op,
-          title,
-          url,
-          body,
-          author,
-          authorAddress,
-          signature,
-        });
+        // TODO: fix for SNS names coming up in view-news
+        if (p === 'ons' && title) {
+          setNews({
+            p,
+            op,
+            title,
+            url,
+            body,
+            author,
+            authorAddress,
+            signature,
+          });
+        }
       });
     }
   }, [id]);

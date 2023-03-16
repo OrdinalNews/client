@@ -10,7 +10,6 @@ export async function onRequest(context: EventContext<Env, any, any>): Promise<R
     };
     let complete = false;
     const keys: KVNamespaceListKey<unknown, string>[] = [];
-
     do {
       const kvKeyList = await env.ORD_NEWS.list({ ...options });
       if (kvKeyList.keys.length > 0) {

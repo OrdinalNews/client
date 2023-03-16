@@ -16,17 +16,13 @@ export async function onRequest(context: EventContext<Env, any, any>): Promise<R
     const keys: KVNamespaceListKey<unknown, string>[] = [];
     do {
       const kvKeyList = await env.ORD_LIST.list({ ...options });
-      console.log(`kvKeyList: ${JSON.stringify(kvKeyList, null, 2)}`);
       if (kvKeyList.keys.length > 0) {
-        console.log(`  length: ${kvKeyList.keys.length}`);
         keys.push(...kvKeyList.keys);
       }
-      console.log(`  list_complete: ${kvKeyList.list_complete}`);
       if (kvKeyList.list_complete) {
         complete = true;
       }
       if ('cursor' in kvKeyList) {
-        console.log(`  cursor: ${kvKeyList.cursor}`);
         options.cursor = kvKeyList.cursor;
       }
     } while (complete === false);
