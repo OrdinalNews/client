@@ -1,17 +1,20 @@
-import { EventContext } from '@cloudflare/workers-types';
+import { EventContext, KVNamespaceListOptions } from '@cloudflare/workers-types';
 import { createResponse } from '../../../lib/api-helpers';
 import { Env } from '../../../lib/api-types';
 
 export async function onRequest(context: EventContext<Env, any, any>): Promise<Response> {
   try {
     const { env } = context;
+    const { searchParams } = new URL(context.request.url);
+    const cursor = searchParams.get('cursor');
     const options: KVNamespaceListOptions = {
-      cursor: undefined,
+      cursor: cursor ?? undefined,
     };
-    let complete = false;
-    const keys: KVNamespaceListKey<unknown, string>[] = [];
+    // let complete = false;
+    // const keys: KVNamespaceListKey<unknown, string>[] = [];
+    const kvKeyList = await env.ORD_NEWS.list({ ...options });
+    /*
     do {
-      const kvKeyList = await env.ORD_NEWS.list({ ...options });
       if (kvKeyList.keys.length > 0) {
         keys.push(...kvKeyList.keys);
       }
@@ -22,8 +25,8 @@ export async function onRequest(context: EventContext<Env, any, any>): Promise<R
         options.cursor = kvKeyList.cursor;
       }
     } while (complete === false);
-
-    return createResponse(keys);
+    */
+    return createResponse(kvKeyList);
   } catch (err) {
     return createResponse(err, 500);
   }
