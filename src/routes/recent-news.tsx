@@ -71,6 +71,7 @@ export default function RecentNews() {
     getRecentNews()
       .then(data => {
         if (data) {
+          console.log(`getRecentNews data: ${JSON.stringify(data)}`);
           setNewsList(data.keys.map((key: any) => key.name));
         }
       })
@@ -82,6 +83,7 @@ export default function RecentNews() {
 
   useEffect(() => {
     if (newsList && newsList.length > 0) {
+      console.log(`newsList: ${JSON.stringify(newsList)}`);
       for (const newsId of newsList) {
         getNewsData(newsId)
           .then(data => {
