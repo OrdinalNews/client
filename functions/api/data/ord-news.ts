@@ -7,8 +7,12 @@ export async function onRequest(context: EventContext<Env, any, any>): Promise<R
     const { env } = context;
     const { searchParams } = new URL(context.request.url);
     const cursor = searchParams.get('cursor');
+    const prefix = searchParams.get('prefix');
+    const limit = searchParams.get('limit');
     const options: KVNamespaceListOptions = {
       cursor: cursor ?? undefined,
+      prefix: prefix ?? undefined,
+      limit: limit ? parseInt(limit) : undefined,
     };
     // let complete = false;
     // const keys: KVNamespaceListKey<unknown, string>[] = [];
