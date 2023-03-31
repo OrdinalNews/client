@@ -71,8 +71,9 @@ export default function RecentNews() {
     getRecentNews()
       .then(data => {
         if (data) {
-          console.log(`getRecentNews data: ${JSON.stringify(data)}`);
-          setNewsList(data.keys.map((key: any) => key.name));
+          const newsList = data.keys.map((key: any) => key.name);
+          console.log(`newsList: ${JSON.stringify(newsList)}`);
+          setNewsList(newsList);
         }
       })
       .catch(err => {
