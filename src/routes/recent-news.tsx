@@ -5,8 +5,7 @@ import { InscriptionMeta, OrdinalNews } from '../../lib/api-types';
 import { Link } from 'react-router-dom';
 import StatsCard from '../components/stats-card';
 
-// const apiUrl = new URL('https://inscribe.news/');
-const apiUrl = new URL('https://fix-recent-news.ordinal-news-client.pages.dev/');
+const apiUrl = new URL('https://inscribe.news/');
 
 async function getRecentNews() {
   const result = await fetch(new URL(`/api/data/ord-news`, apiUrl).toString());
@@ -73,7 +72,7 @@ export default function RecentNews() {
       .then(data => {
         if (data) {
           const newsList = data.keys.map((key: any) => key.name);
-          console.log(`newsList: ${JSON.stringify(newsList)}`);
+          //console.log(`newsList: ${JSON.stringify(newsList)}`);
           setNewsList(newsList);
         }
       })
@@ -85,7 +84,6 @@ export default function RecentNews() {
 
   useEffect(() => {
     if (newsList && newsList.length > 0) {
-      console.log(`newsList: ${JSON.stringify(newsList)}`);
       for (const newsId of newsList) {
         getNewsData(newsId)
           .then(data => {
@@ -97,12 +95,13 @@ export default function RecentNews() {
                 return [data];
               });
             }
+            setLoading(false);
           })
           .catch(err => {
             console.log(`getNewsData: ${err}`);
+            setLoading(false);
           });
       }
-      setLoading(false);
     }
   }, [newsList]);
 
