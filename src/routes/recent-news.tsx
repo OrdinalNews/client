@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Heading, HStack, Text } from '@chakra-ui/react';
+import { KVNamespaceListResult } from '@cloudflare/workers-types';
 import { InscriptionMeta, OrdinalNews } from '../../lib/api-types';
 import { Link } from 'react-router-dom';
 import StatsCard from '../components/stats-card';
@@ -7,13 +8,12 @@ import StatsCard from '../components/stats-card';
 const apiUrl = new URL('https://inscribe.news/');
 
 async function getRecentNews() {
-  const list = await fetch(new URL(`/api/data/ord-news`, apiUrl).toString());
-  if (list.ok) {
-    // TODO: type as KVNamespaceListResult<unknown>
-    const infoData = await list.json();
+  const result = await fetch(new URL(`/api/data/ord-news`, apiUrl).toString());
+  if (result.ok) {
+    const infoData: KVNamespaceListResult<unknown, string> = await result.json();
     return infoData;
   }
-  console.log(`getRecentNews: ${list.status}`);
+  console.log(`getRecentNews: ${result.status}`);
   return undefined;
 }
 
@@ -46,11 +46,11 @@ function NewsItem(props: InscriptionMeta & OrdinalNews) {
       />
       <StatsCard
         title="Inscription #"
-        stat={number}
+        stat={number.toLocaleString()}
       />
       <StatsCard
         title="Author"
-        stat={author ? author : 'not defined'}
+        stat={author ? author : 'anonymous'}
       />
       <StatsCard
         title="Timestamp"
@@ -71,7 +71,9 @@ export default function RecentNews() {
     getRecentNews()
       .then(data => {
         if (data) {
-          setNewsList(data.keys.map((key: any) => key.name));
+          const newsList = data.keys.map((key: any) => key.name);
+          //console.log(`newsList: ${JSON.stringify(newsList)}`);
+          setNewsList(newsList);
         }
       })
       .catch(err => {
@@ -93,12 +95,13 @@ export default function RecentNews() {
                 return [data];
               });
             }
+            setLoading(false);
           })
           .catch(err => {
             console.log(`getNewsData: ${err}`);
+            setLoading(false);
           });
       }
-      setLoading(false);
     }
   }, [newsList]);
 
