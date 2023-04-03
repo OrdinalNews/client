@@ -4,7 +4,6 @@ import {
   HiroApiInscription,
   InscriptionContent,
   InscriptionMeta,
-  OrdApiInscription,
   OrdinalNews,
 } from './api-types';
 
@@ -28,9 +27,7 @@ export async function fetchUrl(url: string) {
   throw new Error(`fetchUrl: ${url} ${response.status} ${response.statusText}`);
 }
 
-// base API definitions
-export const ordinalsUrl = new URL('https://ordinals.com/');
-export const ordApiUrl = new URL('https://ordapi.xyz/');
+// base API definition
 export const hiroApiUrl = new URL('https://api.hiro.so/');
 
 // takes data and status code and returns a Response object
@@ -40,51 +37,75 @@ export function createResponse(data: unknown, status = 200) {
   });
 }
 
+// takes a number and returns it with padding for consistent formatting/sorting
+export function padNumber(num: number, size = 10) {
+  let s = String(num);
+  if (s.length > size)
+    throw new Error(`Number ${num} is larger than the specified padding size of ${size}`);
+  while (s.length < size) s = '0' + s;
+  return s;
+}
+
 /////////////////////////
 // GETTERS
 /////////////////////////
 
-// used by API with KV support through Env
+// used by all API calls
 export async function getInscription(
   env: Env,
   id: string
 ): Promise<InscriptionMeta & InscriptionContent> {
+  // define the objects to be returned
+  let metadata: InscriptionMeta | undefined = undefined;
+  let content: Response | undefined = undefined;
+
+  // check for data in V2 key, return if found
   try {
-    // try to get from KV
-    const kvData = await env.ORD_LIST.getWithMetadata(id, { type: 'arrayBuffer' });
+    const kvData = await env.ORD_LIST_V2.getWithMetadata(id, { type: 'arrayBuffer' });
     if (kvData.metadata !== null && kvData.value !== null) {
-      const metadata = kvData.metadata as InscriptionMeta;
-      const content = kvData.value as ArrayBuffer;
+      metadata = kvData.metadata as InscriptionMeta;
+      content = new Response(kvData.value as ArrayBuffer);
       return {
-        content: new Response(content),
+        content,
         ...metadata,
       };
     }
   } catch (err) {
-    console.log(`getInscription err: ${err}`);
+    console.log(`getInscription: unable to retrieve from V2 KV key\n${id}\n${String(err)}`);
   }
-  // if not in KV, fetch metadata:
-  let metadata = await fetchMetaFromHiro(id).catch(() => undefined);
-  if (metadata === undefined) {
-    metadata = await fetchMetaFromOrdApi(id).catch(() => undefined);
+
+  // check for data in V1 key, store if found
+  try {
+    const kvData = await env.ORD_LIST.getWithMetadata(id, { type: 'arrayBuffer' });
+    if (kvData.metadata !== null && kvData.value !== null) {
+      metadata = kvData.metadata as InscriptionMeta;
+      content = new Response(kvData.value as ArrayBuffer);
+    }
+  } catch (err) {
+    console.log(`getInscription: unable to retrieve from V1 KV key\n${id}\n${String(err)}`);
   }
-  if (metadata === undefined || Object.keys(metadata).length === 0) {
-    throw new Error(`getInscription: metadata not found for ${id}`);
+
+  // check that data was returned, fetch from Hiro API if not
+  // works with inscription ID or inscription number
+  if (metadata === undefined || Object.keys(metadata).length === 0 || content === undefined) {
+    try {
+      metadata = await fetchMetaFromHiro(id);
+      content = await fetchContentFromHiro(id);
+    } catch (err) {
+      // catch and surface errors if any
+      throw err;
+    }
   }
-  // then fetch content:
-  let content = await fetchContentFromHiro(id).catch(() => undefined);
-  if (content === undefined) {
-    content = await fetchContentFromOrdinals(id).catch(() => undefined);
-  }
-  if (content === undefined) {
-    throw new Error(`getInscription: content not found for ${id}`);
-  }
+
+  // create the inscription key name
+  const keyName = `inscription-${padNumber(metadata.number)}`;
+
   // test if valid by Ordinals News Standard
   const newsContent = content.clone();
   const contentString = new TextDecoder().decode(await newsContent.arrayBuffer());
   let news: OrdinalNews;
   try {
-    // parse data and store in news KV
+    // parse data from content
     const contentObj = JSON.parse(contentString);
     news = {
       p: contentObj.p,
@@ -98,15 +119,21 @@ export async function getInscription(
     };
     // check that it's a valid news inscription
     if (news.p === 'ons' && news.title) {
+      // if yes, store in V2 KV key for news only
       const kvNewsContent = content.clone();
-      await env.ORD_NEWS.put(id, await kvNewsContent.arrayBuffer(), { metadata });
+      await env.ORD_NEWS_V2.put(keyName, await kvNewsContent.arrayBuffer(), { metadata });
     }
   } catch (err) {
     console.log(`Not a valid news inscription: ${id}\n${err}`);
   }
-  // store in KV
+
+  // store in general V2 KV key for inscriptions
   const kvContent = content.clone();
-  await env.ORD_LIST.put(id, await kvContent.arrayBuffer(), { metadata });
+  await env.ORD_LIST_V2.put(keyName, await kvContent.arrayBuffer(), {
+    metadata,
+  });
+
+  // return data to endpoint
   return {
     content,
     ...metadata,
@@ -123,7 +150,7 @@ export async function fetchMetaFromHiro(id: string): Promise<InscriptionMeta> {
   const url = new URL(`/ordinals/v1/inscriptions/${id}`, hiroApiUrl);
   const data = await fetchUrl(url.toString()).catch(() => {});
   if (data === undefined || Object.keys(data).length === 0) {
-    throw new Error(`fetchMetaFromHiro: returned no data: ${url}`);
+    throw new Error(`Unable to fetch metadata from Hiro API:\nID: ${id}\nURL: ${url}`);
   }
   const apiData = data as HiroApiInscription;
   const metadata: InscriptionMeta = {
@@ -140,32 +167,6 @@ export async function fetchMetaFromHiro(id: string): Promise<InscriptionMeta> {
   return metadata;
 }
 
-// fetch inscription data from ordapi.xyz
-// returns metadata for KV key
-export async function fetchMetaFromOrdApi(id: string): Promise<InscriptionMeta> {
-  const url = new URL(`/inscription/${id}`, ordApiUrl);
-  const data = await fetchUrl(url.toString()).catch(() => {});
-  if (data === undefined || Object.keys(data).length === 0) {
-    throw new Error(`fetchMetaFromOrdApi: returned no data: ${url}`);
-  }
-  const apiData = data as OrdApiInscription;
-  const txid = apiData['genesis transaction'].split('/').pop();
-  const contentLength = apiData['content length'].replace(' bytes', '');
-  const genesisBlock = apiData['genesis height'].replace('/block/', '');
-  const metadata: InscriptionMeta = {
-    id: apiData.id,
-    number: apiData.inscription_number,
-    address: apiData.address,
-    content_type: apiData['content type'],
-    content_length: Number(contentLength),
-    genesis_block_height: Number(genesisBlock),
-    genesis_tx_id: txid ? txid : apiData['genesis transaction'],
-    timestamp: new Date(apiData.timestamp).toISOString(),
-    last_updated: new Date().toISOString(),
-  };
-  return metadata;
-}
-
 /////////////////////////
 // FETCH CONTENT
 /////////////////////////
@@ -175,17 +176,7 @@ export async function fetchContentFromHiro(id: string): Promise<Response> {
   const url = new URL(`/ordinals/v1/inscriptions/${id}/content`, hiroApiUrl);
   const response = await fetch(url.toString()).catch(() => undefined);
   if (response === undefined) {
-    throw new Error(`fetchContentFromHiro: returned no data: ${url}`);
-  }
-  return response;
-}
-
-// fetches ordinals.com/content results
-export async function fetchContentFromOrdinals(id: string): Promise<Response> {
-  const url = new URL(`/content/${id}`, ordinalsUrl);
-  const response = await fetch(url.toString()).catch(() => undefined);
-  if (response === undefined) {
-    throw new Error(`fetchContentFromOrdinals: returned no data: ${url}`);
+    throw new Error(`Unable to fetch content from Hiro API:\nID: ${id}\nURL: ${url}`);
   }
   return response;
 }
