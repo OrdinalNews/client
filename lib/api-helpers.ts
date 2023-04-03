@@ -83,7 +83,7 @@ export async function getInscription(
       metadata = await fetchMetaFromHiro(id);
       content = await fetchContentFromHiro(id);
     } catch (err) {
-      throw new Error(`getInscription: unable to retrieve from Hiro API\n${id}\n${String(err)}`);
+      throw new Error(err);
     }
   }
 
@@ -141,7 +141,7 @@ export async function fetchMetaFromHiro(id: string): Promise<InscriptionMeta> {
   const url = new URL(`/ordinals/v1/inscriptions/${id}`, hiroApiUrl);
   const data = await fetchUrl(url.toString()).catch(() => {});
   if (data === undefined || Object.keys(data).length === 0) {
-    throw new Error(`fetchMetaFromHiro: returned no data: ${url}`);
+    throw new Error(`fetchMetaFromHiro: returned no data:\nID: ${id}\nURL: ${url}`);
   }
   const apiData = data as HiroApiInscription;
   const metadata: InscriptionMeta = {
@@ -167,7 +167,7 @@ export async function fetchContentFromHiro(id: string): Promise<Response> {
   const url = new URL(`/ordinals/v1/inscriptions/${id}/content`, hiroApiUrl);
   const response = await fetch(url.toString()).catch(() => undefined);
   if (response === undefined) {
-    throw new Error(`fetchContentFromHiro: returned no data: ${url}`);
+    throw new Error(`fetchContentFromHiro: returned no data\nID: ${id}\nURL: ${url}`);
   }
   return response;
 }
