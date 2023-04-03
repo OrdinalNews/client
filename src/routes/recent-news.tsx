@@ -5,9 +5,7 @@ import { InscriptionMeta, OrdinalNews } from '../../lib/api-types';
 import { Link } from 'react-router-dom';
 import StatsCard from '../components/stats-card';
 
-// const apiUrl = new URL('https://inscribe.news/');
-// use dev api temporarily
-const apiUrl = new URL('https://feat-indexer-v2.ordinal-news-client.pages.dev/');
+const apiUrl = new URL('https://inscribe.news/');
 
 async function getRecentNews() {
   const result = await fetch(new URL(`/api/data/ord-news`, apiUrl).toString());
