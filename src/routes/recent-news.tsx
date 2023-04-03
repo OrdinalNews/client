@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Heading, HStack, Text } from '@chakra-ui/react';
-import { KVNamespaceListResult } from '@cloudflare/workers-types';
+import { Divider, Heading, Stack, Text, VStack } from '@chakra-ui/react';
+import { KVNamespaceListKey, KVNamespaceListResult } from '@cloudflare/workers-types';
 import { InscriptionMeta, OrdinalNews } from '../../lib/api-types';
 import { Link } from 'react-router-dom';
-import StatsCard from '../components/stats-card';
 
 const apiUrl = new URL('https://inscribe.news/');
 
@@ -11,52 +10,49 @@ async function getRecentNews() {
   const result = await fetch(new URL(`/api/data/ord-news`, apiUrl).toString());
   if (result.ok) {
     const infoData: KVNamespaceListResult<unknown, string> = await result.json();
+    console.log(`getRecentNews: found ${infoData.keys.length} news items from API`);
     return infoData;
   }
-  console.log(`getRecentNews: ${result.status}`);
+  console.log(`getRecentNews: ${result.status} ${result.statusText}`);
   return undefined;
 }
 
 async function getNewsData(id: string) {
   const news = await fetch(new URL(`/api/data/${id}`, apiUrl).toString());
   if (news.ok) {
-    console.log(`news: ${typeof news}`);
-    console.log(`news: ${JSON.stringify(news)}`);
+    //console.log(`news: ${typeof news}`);
+    //console.log(`news: ${JSON.stringify(news)}`);
     const newsData: InscriptionMeta & OrdinalNews = await news.json();
     return newsData;
   }
-  console.log(`getNewsData: ${news.status}`);
+  console.log(`getNewsData: ${news.status} ${news.statusText}`);
   return undefined;
 }
 
 function NewsItem(props: InscriptionMeta & OrdinalNews) {
   const { id, number, timestamp, title, author } = props;
   return (
-    <HStack
-      my={3}
-      alignItems="stretch"
+    <VStack
+      alignItems="flex-start"
+      py={4}
     >
-      <StatsCard
-        title={undefined}
-        stat={<Link to={`/view-news?id=${id}`}>{title}</Link>}
-      />
-      <StatsCard
-        title="News #"
-        stat="coming soon"
-      />
-      <StatsCard
-        title="Inscription #"
-        stat={number.toLocaleString()}
-      />
-      <StatsCard
-        title="Author"
-        stat={author ? author : 'anonymous'}
-      />
-      <StatsCard
-        title="Timestamp"
-        stat={new Date(timestamp).toLocaleString()}
-      />
-    </HStack>
+      <Heading
+        size="md"
+        textAlign="left"
+      >
+        <Link to={`/view-news?id=${id}`}>{title}</Link>
+      </Heading>
+      <Stack direction={['column', 'row']}>
+        <Text>{new Date(timestamp).toLocaleString()}</Text>
+        <Text>•</Text>
+        <Text>News # 005</Text>
+        <Text>•</Text>
+        <Text>Inscription # {number.toLocaleString()}</Text>
+        <Text>•</Text>
+        <Text>{author ? author : 'anonymous'}</Text>
+      </Stack>
+      <Divider />
+    </VStack>
   );
 }
 
@@ -71,8 +67,7 @@ export default function RecentNews() {
     getRecentNews()
       .then(data => {
         if (data) {
-          const newsList = data.keys.map((key: any) => key.name);
-          //console.log(`newsList: ${JSON.stringify(newsList)}`);
+          const newsList = data.keys.map((key: KVNamespaceListKey<unknown, string>) => key.name);
           setNewsList(newsList);
         }
       })
@@ -84,23 +79,27 @@ export default function RecentNews() {
 
   useEffect(() => {
     if (newsList && newsList.length > 0) {
+      const processedNewsIds = new Set();
       for (const newsId of newsList) {
-        getNewsData(newsId)
-          .then(data => {
-            if (data) {
-              setNewsData(prev => {
-                if (prev) {
-                  return [...prev, data];
-                }
-                return [data];
-              });
-            }
-            setLoading(false);
-          })
-          .catch(err => {
-            console.log(`getNewsData: ${err}`);
-            setLoading(false);
-          });
+        if (!processedNewsIds.has(newsId)) {
+          processedNewsIds.add(newsId);
+          getNewsData(newsId)
+            .then(data => {
+              if (data) {
+                setNewsData(prev => {
+                  if (prev) {
+                    return [...prev, data];
+                  }
+                  return [data];
+                });
+              }
+              setLoading(false);
+            })
+            .catch(err => {
+              console.log(`getNewsData: ${err}`);
+              setLoading(false);
+            });
+        }
       }
     }
   }, [newsList]);
