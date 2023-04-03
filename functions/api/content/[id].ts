@@ -7,10 +7,13 @@ export async function onRequest(context: EventContext<Env, any, any>): Promise<R
     // setup and config
     const { env } = context;
     const id = String(context.params.id);
+    // get the inscription data
     const inscriptionData = await getInscription(env, id);
+    // verify content body exists
     if (inscriptionData.content.body === null) {
       throw new Error(`Inscription content not found for ${id}`);
     }
+    // return the content
     let { readable, writable } = new TransformStream();
     inscriptionData.content.body.pipeTo(writable);
     return new Response(readable, {
@@ -19,6 +22,7 @@ export async function onRequest(context: EventContext<Env, any, any>): Promise<R
       },
     });
   } catch (err) {
+    // return the error
     return createResponse(String(err), 404);
   }
 }
