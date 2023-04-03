@@ -38,7 +38,7 @@ export async function onRequest(context: EventContext<Env, any, any>): Promise<R
         headers: { 'Content-Type': 'text/html' },
       });
     } catch (err) {
-      throw err;
+      throw new Error(`Unable to parse news inscription for ${id}`);
     }
   } catch (err) {
     // return the error

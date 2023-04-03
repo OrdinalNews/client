@@ -30,7 +30,7 @@ export async function onRequest(context: EventContext<Env, any, any>): Promise<R
         signature: contentObj.signature,
       };
     } catch (err) {
-      throw err;
+      throw new Error(`Unable to parse news inscription for ${id}`);
     }
     // get the metadata from inscription
     const meta = (({ content, ...inscriptionData }) => inscriptionData)(
