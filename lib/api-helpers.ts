@@ -73,8 +73,12 @@ export async function getInscription(
     console.log(`getInscription: unable to retrieve from V1 KV key`);
     // fetch metadata and content from Hiro API
     // works with inscription ID or inscription number
-    metadata = await fetchMetaFromHiro(id).catch(() => undefined);
-    content = await fetchContentFromHiro(id).catch(() => undefined);
+    metadata = await fetchMetaFromHiro(id).catch(err => {
+      throw new Error(`getInscription: metadata not found for ${id}\n${String(err)}`);
+    });
+    content = await fetchContentFromHiro(id).catch(err => {
+      throw new Error(`getInscription: content not found for ${id}\n${String(err)}`);
+    });
   }
   // check that data was actually returned
   if (metadata === undefined || Object.keys(metadata).length === 0) {
