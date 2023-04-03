@@ -41,57 +41,52 @@ export function createResponse(data: unknown, status = 200) {
 // GETTERS
 /////////////////////////
 
-// used by API with KV support through Env
+// used by all API calls
 export async function getInscription(
   env: Env,
   id: string
 ): Promise<InscriptionMeta & InscriptionContent> {
-  // try to get from V2 KV key
+  // define the objects to be returned
+  let metadata: InscriptionMeta | undefined = undefined;
+  let content: Response | undefined = undefined;
+
+  // check for data in V2 key, return if found
   try {
     const kvData = await env.ORD_LIST_V2.getWithMetadata(id, { type: 'arrayBuffer' });
     if (kvData.metadata !== null && kvData.value !== null) {
-      const metadata = kvData.metadata as InscriptionMeta;
-      const content = kvData.value as ArrayBuffer;
+      metadata = kvData.metadata as InscriptionMeta;
+      content = new Response(kvData.value as ArrayBuffer);
       return {
-        content: new Response(content),
+        content,
         ...metadata,
       };
     }
   } catch (err) {
-    console.log(`getInscription: unable to retrieve from V2 KV key\n${err}`);
+    console.log(`getInscription: unable to retrieve from V2 KV key\n${id}\n${String(err)}`);
   }
-  // define the objects to be returned
-  let metadata: InscriptionMeta | undefined;
-  let content: Response | undefined;
-  // try to get from V1 KV key
+
+  // check for data in V1 key, store if found
   try {
     const kvData = await env.ORD_LIST.getWithMetadata(id, { type: 'arrayBuffer' });
     if (kvData.metadata !== null && kvData.value !== null) {
       metadata = kvData.metadata as InscriptionMeta;
       content = new Response(kvData.value as ArrayBuffer);
     }
-  } catch {
-    console.log(`getInscription: unable to retrieve from V1 KV key`);
+  } catch (err) {
+    console.log(`getInscription: unable to retrieve from V1 KV key\n${id}\n${String(err)}`);
   }
 
-  // check that data was actually returned
-  if (metadata === undefined || Object.keys(metadata).length === 0) {
-    // fetch metadata from Hiro API, works with inscription ID or inscription number
-    metadata = await fetchMetaFromHiro(id).catch(err => {
-      throw new Error(`getInscription: metadata not found for ${id}\n${String(err)}`);
-    });
+  // check that data was returned, fetch from Hiro API if not
+  // works with inscription ID or inscription number
+  if (metadata === undefined || Object.keys(metadata).length === 0 || content === undefined) {
+    try {
+      metadata = await fetchMetaFromHiro(id);
+      content = await fetchContentFromHiro(id);
+    } catch (err) {
+      throw new Error(`getInscription: unable to retrieve from Hiro API\n${id}\n${String(err)}`);
+    }
   }
-  if (content === undefined) {
-    // fetch metadata from Hiro API, works with inscription ID or inscription number
-    content = await fetchContentFromHiro(id).catch(err => {
-      throw new Error(`getInscription: content not found for ${id}\n${String(err)}`);
-    });
-  }
-  console.log(`getInscription: metadata: ${JSON.stringify(metadata)}`);
 
-  if (metadata === undefined || content === undefined) {
-    throw new Error(`getInscription: no data found for ${id}`);
-  }
   // test if valid by Ordinals News Standard
   const newsContent = content.clone();
   const contentString = new TextDecoder().decode(await newsContent.arrayBuffer());
@@ -122,12 +117,14 @@ export async function getInscription(
   } catch (err) {
     console.log(`Not a valid news inscription: ${id}\n${err}`);
   }
+
   // store in general V2 KV key for inscriptions
   const kvContent = content.clone();
   await env.ORD_LIST_V2.put(`inscription-${metadata.number}`, await kvContent.arrayBuffer(), {
     metadata,
   });
-  // return data
+
+  // return data to endpoint
   return {
     content,
     ...metadata,
