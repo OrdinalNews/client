@@ -7,20 +7,16 @@ export async function onRequest(context: EventContext<Env, any, any>): Promise<R
     // setup and config
     const { env } = context;
     const id = String(context.params.id);
-    console.log(`id: ${id}`);
-    const inscriptionData = await getInscription(env, id).catch(err => {
-      console.log(String(err));
-      return undefined;
-    });
-    console.log(`inscriptionData: ${JSON.stringify(inscriptionData)}`);
-    if (inscriptionData === undefined) {
-      return createResponse(`Inscription info not found for ${id}`, 404);
-    }
+    // get the inscription data
+    const inscriptionData = await getInscription(env, id);
+    // get the metadata from inscription
     const meta = (({ content, ...inscriptionData }) => inscriptionData)(
       inscriptionData
     ) as InscriptionMeta;
+    // return the metadata
     return createResponse(meta);
   } catch (err) {
-    return createResponse(String(err), 500);
+    // return the error
+    return createResponse(String(err), 404);
   }
 }
