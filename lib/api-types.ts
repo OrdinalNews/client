@@ -2,35 +2,11 @@ import { KVNamespace } from '@cloudflare/workers-types';
 
 // KV binding
 export interface Env {
-  ORD_DATA: KVNamespace;
   ORD_LIST: KVNamespace;
   ORD_NEWS: KVNamespace;
-  ORD_NEWS_INDEX: KVNamespace;
-  PREVIEW: string;
-  CF_PAGES_BRANCH: string;
+  ORD_LIST_V2: KVNamespace;
+  ORD_NEWS_V2: KVNamespace;
 }
-
-// returned from ordapi.xyz
-// TODO: changed since last look?
-export type OrdApiInscription = {
-  address: string;
-  content: string;
-  'content length': string;
-  'content type': string;
-  'genesis fee': string;
-  'genesis height': string;
-  'genesis transaction': string;
-  id: string;
-  inscription_number: number;
-  location: string;
-  offset: string;
-  output: string;
-  'output value': string;
-  preview: string;
-  sat: string;
-  timestamp: Date;
-  title: string;
-};
 
 // returned from api.hiro.so
 export type HiroApiResponse = {
@@ -64,21 +40,9 @@ export type HiroApiInscription = {
   timestamp: number;
 };
 
-// defining the news standard in TS
-export type OrdinalNews = {
-  p: string;
-  op: string;
-  title: string;
-  url?: string;
-  body?: string;
-  author?: string;
-  authorAddress?: string;
-  signature?: string;
-};
-
 // metadata for inscription stored in KV
 export type InscriptionMeta = {
-  // inscription
+  // inscription details
   id: string;
   number: number;
   address: string;
@@ -95,4 +59,16 @@ export type InscriptionMeta = {
 
 export type InscriptionContent = {
   content: Response;
+};
+
+// defining the news standard in TS
+export type OrdinalNews = {
+  p: string;
+  op: string;
+  title: string;
+  url?: string;
+  body?: string;
+  author?: string;
+  authorAddress?: string;
+  signature?: string;
 };

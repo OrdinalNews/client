@@ -4,7 +4,6 @@ import {
   HiroApiInscription,
   InscriptionContent,
   InscriptionMeta,
-  OrdApiInscription,
   OrdinalNews,
 } from './api-types';
 
@@ -28,9 +27,7 @@ export async function fetchUrl(url: string) {
   throw new Error(`fetchUrl: ${url} ${response.status} ${response.statusText}`);
 }
 
-// base API definitions
-export const ordinalsUrl = new URL('https://ordinals.com/');
-export const ordApiUrl = new URL('https://ordapi.xyz/');
+// base API definition
 export const hiroApiUrl = new URL('https://api.hiro.so/');
 
 // takes data and status code and returns a Response object
@@ -65,17 +62,11 @@ export async function getInscription(
   }
   // if not in KV, fetch metadata:
   let metadata = await fetchMetaFromHiro(id).catch(() => undefined);
-  if (metadata === undefined) {
-    metadata = await fetchMetaFromOrdApi(id).catch(() => undefined);
-  }
   if (metadata === undefined || Object.keys(metadata).length === 0) {
     throw new Error(`getInscription: metadata not found for ${id}`);
   }
   // then fetch content:
   let content = await fetchContentFromHiro(id).catch(() => undefined);
-  if (content === undefined) {
-    content = await fetchContentFromOrdinals(id).catch(() => undefined);
-  }
   if (content === undefined) {
     throw new Error(`getInscription: content not found for ${id}`);
   }
@@ -140,32 +131,6 @@ export async function fetchMetaFromHiro(id: string): Promise<InscriptionMeta> {
   return metadata;
 }
 
-// fetch inscription data from ordapi.xyz
-// returns metadata for KV key
-export async function fetchMetaFromOrdApi(id: string): Promise<InscriptionMeta> {
-  const url = new URL(`/inscription/${id}`, ordApiUrl);
-  const data = await fetchUrl(url.toString()).catch(() => {});
-  if (data === undefined || Object.keys(data).length === 0) {
-    throw new Error(`fetchMetaFromOrdApi: returned no data: ${url}`);
-  }
-  const apiData = data as OrdApiInscription;
-  const txid = apiData['genesis transaction'].split('/').pop();
-  const contentLength = apiData['content length'].replace(' bytes', '');
-  const genesisBlock = apiData['genesis height'].replace('/block/', '');
-  const metadata: InscriptionMeta = {
-    id: apiData.id,
-    number: apiData.inscription_number,
-    address: apiData.address,
-    content_type: apiData['content type'],
-    content_length: Number(contentLength),
-    genesis_block_height: Number(genesisBlock),
-    genesis_tx_id: txid ? txid : apiData['genesis transaction'],
-    timestamp: new Date(apiData.timestamp).toISOString(),
-    last_updated: new Date().toISOString(),
-  };
-  return metadata;
-}
-
 /////////////////////////
 // FETCH CONTENT
 /////////////////////////
@@ -176,16 +141,6 @@ export async function fetchContentFromHiro(id: string): Promise<Response> {
   const response = await fetch(url.toString()).catch(() => undefined);
   if (response === undefined) {
     throw new Error(`fetchContentFromHiro: returned no data: ${url}`);
-  }
-  return response;
-}
-
-// fetches ordinals.com/content results
-export async function fetchContentFromOrdinals(id: string): Promise<Response> {
-  const url = new URL(`/content/${id}`, ordinalsUrl);
-  const response = await fetch(url.toString()).catch(() => undefined);
-  if (response === undefined) {
-    throw new Error(`fetchContentFromOrdinals: returned no data: ${url}`);
   }
   return response;
 }
