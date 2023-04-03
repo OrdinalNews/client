@@ -48,7 +48,7 @@ export async function getInscription(
 ): Promise<InscriptionMeta & InscriptionContent> {
   try {
     // try to get from KV
-    const kvData = await env.ORD_LIST.getWithMetadata(id, { type: 'arrayBuffer' });
+    const kvData = await env.ORD_LIST_V2.getWithMetadata(id, { type: 'arrayBuffer' });
     if (kvData.metadata !== null && kvData.value !== null) {
       const metadata = kvData.metadata as InscriptionMeta;
       const content = kvData.value as ArrayBuffer;
@@ -58,14 +58,16 @@ export async function getInscription(
       };
     }
   } catch (err) {
-    console.log(`getInscription err: ${err}`);
+    console.log(`getInscription: unable to retrieve from KV ${err}`);
   }
-  // if not in KV, fetch metadata:
-  let metadata = await fetchMetaFromHiro(id).catch(() => undefined);
+  // fetch metadata from Hiro
+  // works with inscription ID or inscription number
+  const metadata = await fetchMetaFromHiro(id).catch(() => undefined);
   if (metadata === undefined || Object.keys(metadata).length === 0) {
     throw new Error(`getInscription: metadata not found for ${id}`);
   }
-  // then fetch content:
+  // fetch content from Hiro
+  // works with inscription ID or inscription number
   let content = await fetchContentFromHiro(id).catch(() => undefined);
   if (content === undefined) {
     throw new Error(`getInscription: content not found for ${id}`);
@@ -90,14 +92,20 @@ export async function getInscription(
     // check that it's a valid news inscription
     if (news.p === 'ons' && news.title) {
       const kvNewsContent = content.clone();
-      await env.ORD_NEWS.put(id, await kvNewsContent.arrayBuffer(), { metadata });
+      await env.ORD_NEWS_V2.put(
+        `inscription-${metadata.number}`,
+        await kvNewsContent.arrayBuffer(),
+        { metadata }
+      );
     }
   } catch (err) {
     console.log(`Not a valid news inscription: ${id}\n${err}`);
   }
   // store in KV
   const kvContent = content.clone();
-  await env.ORD_LIST.put(id, await kvContent.arrayBuffer(), { metadata });
+  await env.ORD_LIST_V2.put(`inscription-${metadata.number}`, await kvContent.arrayBuffer(), {
+    metadata,
+  });
   return {
     content,
     ...metadata,
