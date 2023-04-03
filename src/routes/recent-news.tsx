@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Divider, Heading, Stack, Text, VStack } from '@chakra-ui/react';
+import { Divider, Heading, Text, VStack, Wrap } from '@chakra-ui/react';
 import { KVNamespaceListKey, KVNamespaceListResult } from '@cloudflare/workers-types';
 import { InscriptionMeta, OrdinalNews } from '../../lib/api-types';
 import { Link } from 'react-router-dom';
@@ -42,7 +42,7 @@ function NewsItem(props: InscriptionMeta & OrdinalNews) {
       >
         <Link to={`/view-news?id=${id}`}>{title}</Link>
       </Heading>
-      <Stack direction={['column', 'row']}>
+      <Wrap>
         <Text>{new Date(timestamp).toLocaleString()}</Text>
         <Text>•</Text>
         <Text>News # 005</Text>
@@ -50,7 +50,7 @@ function NewsItem(props: InscriptionMeta & OrdinalNews) {
         <Text>Inscription # {number.toLocaleString()}</Text>
         <Text>•</Text>
         <Text>{author ? author : 'anonymous'}</Text>
-      </Stack>
+      </Wrap>
       <Divider />
     </VStack>
   );
