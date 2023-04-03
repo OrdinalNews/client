@@ -37,6 +37,15 @@ export function createResponse(data: unknown, status = 200) {
   });
 }
 
+// takes a number and returns it with padding for consistent formatting/sorting
+export function padNumber(num: number, size = 10) {
+  let s = String(num);
+  if (s.length > size)
+    throw new Error(`Number ${num} is larger than the specified padding size of ${size}`);
+  while (s.length < size) s = '0' + s;
+  return s;
+}
+
 /////////////////////////
 // GETTERS
 /////////////////////////
@@ -88,6 +97,9 @@ export async function getInscription(
     }
   }
 
+  // create the inscription key name
+  const keyName = `inscription-${padNumber(metadata.number)}`;
+
   // test if valid by Ordinals News Standard
   const newsContent = content.clone();
   const contentString = new TextDecoder().decode(await newsContent.arrayBuffer());
@@ -109,11 +121,7 @@ export async function getInscription(
     if (news.p === 'ons' && news.title) {
       // if yes, store in V2 KV key for news only
       const kvNewsContent = content.clone();
-      await env.ORD_NEWS_V2.put(
-        `inscription-${metadata.number}`,
-        await kvNewsContent.arrayBuffer(),
-        { metadata }
-      );
+      await env.ORD_NEWS_V2.put(keyName, await kvNewsContent.arrayBuffer(), { metadata });
     }
   } catch (err) {
     console.log(`Not a valid news inscription: ${id}\n${err}`);
@@ -121,7 +129,7 @@ export async function getInscription(
 
   // store in general V2 KV key for inscriptions
   const kvContent = content.clone();
-  await env.ORD_LIST_V2.put(`inscription-${metadata.number}`, await kvContent.arrayBuffer(), {
+  await env.ORD_LIST_V2.put(keyName, await kvContent.arrayBuffer(), {
     metadata,
   });
 
