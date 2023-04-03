@@ -14,23 +14,7 @@ export async function onRequest(context: EventContext<Env, any, any>): Promise<R
       prefix: prefix ?? undefined,
       limit: limit ? parseInt(limit) : undefined,
     };
-    //let complete = false;
-    //const keys: KVNamespaceListKey<unknown, string>[] = [];
-    const kvKeyList = await env.ORD_LIST.list({ ...options });
-    /*
-    do {
-      if (kvKeyList.keys.length > 0) {
-        keys.push(...kvKeyList.keys);
-      }
-      if (kvKeyList.list_complete) {
-        complete = true;
-      }
-      if ('cursor' in kvKeyList) {
-        options.cursor = kvKeyList.cursor;
-      }
-    } while (complete === false);
-    */
-
+    const kvKeyList = await env.ORD_LIST_V2.list({ ...options });
     return createResponse(kvKeyList);
   } catch (err) {
     return createResponse(err, 500);
