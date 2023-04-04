@@ -30,7 +30,7 @@ async function getNewsData(id: string) {
 }
 
 function NewsItem(props: InscriptionMeta & OrdinalNews) {
-  const { id, number, timestamp, title, author } = props;
+  const { number, timestamp, title, author } = props;
   return (
     <VStack
       alignItems="flex-start"
@@ -44,7 +44,7 @@ function NewsItem(props: InscriptionMeta & OrdinalNews) {
       >
         <Link
           className="link-wrap-hack"
-          to={`/view-news?id=${id}`}
+          to={`/view-news?id=${number}`}
         >
           {title}
         </Link>
