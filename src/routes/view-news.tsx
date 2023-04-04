@@ -58,7 +58,6 @@ export default function ViewNews() {
         setData(data);
         // extract news values as InscriptionMeta
         const { p, op, title, url, body, author, authorAddress, signature } = data;
-        // TODO: fix for SNS names coming up in view-news
         if (p === 'ons' && title) {
           setNews({
             p,
@@ -159,6 +158,13 @@ export default function ViewNews() {
           maxW="100%"
           pt={3}
         >
+          <Text>
+            {new Date(data.timestamp).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}
+          </Text>
           {news.author && <Text pb={3}>Author: {news.author}</Text>}
           {news.url && (
             <Text pb={3}>
