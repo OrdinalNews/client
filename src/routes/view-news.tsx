@@ -77,32 +77,62 @@ export default function ViewNews() {
 
   if (!id) {
     return (
-      <Container>
+      <Box
+        display="flex"
+        flexDir="column"
+        alignItems="center"
+        justifyContent="center"
+        textAlign="left"
+        w="100%"
+        minH="100vh"
+        py={8}
+        px={4}
+      >
         <Heading>No Inscription ID</Heading>
         <Text>Unable to load news inscription.</Text>
         <Text>Please provide the ID as a query parameter, or</Text>
         <Link to="/">Click this link to return home.</Link>
-      </Container>
+      </Box>
     );
   }
 
   if (loading) {
     return (
-      <Container>
+      <Box
+        display="flex"
+        flexDir="column"
+        alignItems="center"
+        justifyContent="center"
+        textAlign="left"
+        w="100%"
+        minH="100vh"
+        py={8}
+        px={4}
+      >
         <Heading>Loading inscription data...</Heading>
         <Text>ID: {id}</Text>
-      </Container>
+      </Box>
     );
   }
 
   if (!data || !news) {
     return (
-      <Container>
+      <Box
+        display="flex"
+        flexDir="column"
+        alignItems="center"
+        justifyContent="center"
+        textAlign="left"
+        w="100%"
+        minH="100vh"
+        py={8}
+        px={4}
+      >
         <Heading>Unable to Load</Heading>
         <Text>Unable to load news inscription.</Text>
         <Text>ID: {id}</Text>
         <Link to="/">Click this link to return home.</Link>
-      </Container>
+      </Box>
     );
   }
 
@@ -113,6 +143,7 @@ export default function ViewNews() {
       textAlign="left"
       minH="100vh"
       maxW="800px"
+      pt={8}
     >
       <Heading lineHeight={1}>{news.title}</Heading>
       <Box

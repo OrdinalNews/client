@@ -1,18 +1,25 @@
-import { Box, Heading, Text, Link as ChakraLink, Image, Button } from '@chakra-ui/react';
+import { Box, Heading, Text, Link as ChakraLink, Image, Button, Stack } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
 
 export default function RootIndex() {
   return (
     <Box
-      borderRadius="xl"
       display="flex"
       flexDir="column"
+      alignItems="center"
+      justifyContent="center"
+      textAlign="center"
+      w="100%"
+      minH="100vh"
+      py={8}
+      px={4}
     >
       <Image
         boxSize="150px"
         margin="0 auto"
         src="/ordinal-news-logo.png"
         alt="Ordinal News Logo"
+        mb={4}
       />
       <Heading>Ordinal News Standard</Heading>
       <Text
@@ -21,35 +28,26 @@ export default function RootIndex() {
       >
         Permanently inscribe news and topics of discussion to Bitcoin.
       </Text>
-      <Box
-        display="flex"
-        flexDir={['column', 'column', 'row']}
-        alignContent="center"
-        alignItems="center"
-        justifyContent="center"
+      <Stack
+        direction={['column', 'column', 'row']}
+        spacing={8}
       >
         <Button
           as={Link}
+          className="button-link-hack"
           to="/post-news"
-          className="link-button"
-          me={[0, 0, 8]}
-          mb={[8, 8, 0]}
-          w={['fit-content', '75%', 'auto']}
-          borderRadius="xl"
         >
           Inscribe the News
         </Button>
         <Button
           as={ChakraLink}
+          className="button-link-hack"
           href="https://docs.inscribe.news"
-          className="link-button"
           isExternal
-          w={['fit-content', '75%', 'auto']}
-          borderRadius="xl"
         >
           Read the Docs
         </Button>
-      </Box>
+      </Stack>
     </Box>
   );
 }

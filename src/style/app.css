@@ -1,0 +1,22 @@
+.button-link-hack {
+  color: white !important;
+  text-decoration: none !important
+}
+.button-link-hack:hover {
+  background-color: var(--ons-colors-btc-orange) !important;
+  color: white !important;
+  text-decoration: none !important
+}
+
+.link-wrap-hack {
+  overflow-wrap: anywhere !important;
+}
+
+.chakra-textarea:focus-visible {
+  border-color: var(--ons-colors-muted) !important;
+  box-shadow: 0 0 0 1px var(--ons-colors-muted) !important;
+}
+
+.bitcoin-icon:hover {
+  color: #f7931a;
+}
