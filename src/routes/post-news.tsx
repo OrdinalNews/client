@@ -132,10 +132,15 @@ export default function PostNews() {
   return (
     <>
       <Box
-        borderRadius="xl"
         display="flex"
         flexDir="column"
+        alignItems="center"
+        justifyContent="center"
+        textAlign="center"
         w="100%"
+        minH="100vh"
+        py={8}
+        px={4}
       >
         <Stack
           align={'center'}
@@ -234,7 +239,7 @@ export default function PostNews() {
           <ModalOverlay />
           <ModalContent>
             <ModalHeader>
-              <Heading>Ready to Inscribe</Heading>
+              <Heading>Ready to Inscribe!</Heading>
             </ModalHeader>
             <ModalCloseButton />
             <ModalBody
@@ -299,7 +304,7 @@ export default function PostNews() {
                   as={ChakraLink}
                   href="https://gamma.io/ordinals"
                   isExternal
-                  className="link-button"
+                  className="button-link-hack"
                   minW={['100%', '75%', 'fit-content']}
                   mb={[6, 6, 0]}
                 >
@@ -310,7 +315,7 @@ export default function PostNews() {
                   as={ChakraLink}
                   href="https://ordinalsbot.com/"
                   isExternal
-                  className="link-button"
+                  className="button-link-hack"
                   minW={['100%', '75%', 'fit-content']}
                   mb={[6, 6, 0]}
                 >
@@ -321,7 +326,7 @@ export default function PostNews() {
                   as={ChakraLink}
                   href="https://ordimint.com"
                   isExternal
-                  className="link-button"
+                  className="button-link-hack"
                   minW={['100%', '75%', 'fit-content']}
                   mb={[6, 6, 0]}
                 >
@@ -332,7 +337,7 @@ export default function PostNews() {
                   as={ChakraLink}
                   href="https://unisat.io/inscribe"
                   isExternal
-                  className="link-button"
+                  className="button-link-hack"
                   minW={['100%', '75%', 'fit-content']}
                 >
                   UniSat

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Divider, Heading, Text, VStack, Wrap } from '@chakra-ui/react';
+import { Box, Divider, Heading, HStack, Text, VStack, Wrap, WrapItem } from '@chakra-ui/react';
 import { KVNamespaceListKey, KVNamespaceListResult } from '@cloudflare/workers-types';
 import { InscriptionMeta, OrdinalNews } from '../../lib/api-types';
 import { Link } from 'react-router-dom';
@@ -34,15 +34,22 @@ function NewsItem(props: InscriptionMeta & OrdinalNews) {
   return (
     <VStack
       alignItems="flex-start"
+      w="100%"
+      maxW={1200}
       py={4}
     >
       <Heading
         size="md"
         textAlign="left"
       >
-        <Link to={`/view-news?id=${id}`}>{title}</Link>
+        <Link
+          className="link-wrap-hack"
+          to={`/view-news?id=${id}`}
+        >
+          {title}
+        </Link>
       </Heading>
-      <Wrap>
+      <HStack flexWrap="wrap">
         <Text>{new Date(timestamp).toLocaleString()}</Text>
         <Text>•</Text>
         <Text>News # 005</Text>
@@ -50,7 +57,7 @@ function NewsItem(props: InscriptionMeta & OrdinalNews) {
         <Text>Inscription # {number.toLocaleString()}</Text>
         <Text>•</Text>
         <Text>{author ? author : 'anonymous'}</Text>
-      </Wrap>
+      </HStack>
       <Divider />
     </VStack>
   );
@@ -105,15 +112,53 @@ export default function RecentNews() {
   }, [newsList]);
 
   if (loading) {
-    return <Text>Loading...</Text>;
+    return (
+      <Box
+        display="flex"
+        flexDir="column"
+        alignItems="center"
+        justifyContent="center"
+        textAlign="left"
+        w="100%"
+        minH="100vh"
+        py={8}
+        px={4}
+      >
+        <Text>Loading...</Text>
+      </Box>
+    );
   }
 
   if (!newsList || !newsData) {
-    return <Text>Failed to load news.</Text>;
+    return (
+      <Box
+        display="flex"
+        flexDir="column"
+        alignItems="center"
+        justifyContent="center"
+        textAlign="left"
+        w="100%"
+        minH="100vh"
+        py={8}
+        px={4}
+      >
+        <Text>Failed to load news.</Text>
+      </Box>
+    );
   }
 
   return (
-    <>
+    <Box
+      display="flex"
+      flexDir="column"
+      alignItems="center"
+      justifyContent="center"
+      textAlign="left"
+      w="100%"
+      minH="100vh"
+      py={8}
+      px={4}
+    >
       <Heading>News Feed</Heading>
       <Text>
         Detected {newsList.length} news inscription{newsList.length > 1 ? 's' : null}
@@ -130,6 +175,6 @@ export default function RecentNews() {
             {...news}
           />
         ))}
-    </>
+    </Box>
   );
 }

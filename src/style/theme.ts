@@ -1,15 +1,21 @@
-// theme.ts
+// Extending the base Chakra theme
 
-// 1. import `extendTheme` function
-import { extendTheme, type ThemeConfig } from '@chakra-ui/react';
+import { extendTheme } from '@chakra-ui/react';
+import { config } from './theme/config';
+import { colors } from './theme/colors';
+import { fonts } from './theme/fonts';
+import { styles } from './theme/styles';
+import { components } from './theme/components';
 
-// 2. Add your color mode config
-const config: ThemeConfig = {
-  initialColorMode: 'dark',
-  useSystemColorMode: false,
+const themeOptions = {
+  config,
+  colors,
+  fonts,
+  styles,
+  components,
 };
 
-// 3. extend the theme
-const theme = extendTheme({ config });
+// extend the theme using all values above
+const theme = extendTheme(themeOptions);
 
 export default theme;
