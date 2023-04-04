@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Box, Divider, Heading, HStack, Text, VStack, Wrap, WrapItem } from '@chakra-ui/react';
+import { Box, Divider, Heading, HStack, Text, VStack } from '@chakra-ui/react';
 import { KVNamespaceListKey, KVNamespaceListResult } from '@cloudflare/workers-types';
 import { InscriptionMeta, OrdinalNews } from '../../lib/api-types';
 import { Link } from 'react-router-dom';
@@ -10,7 +10,6 @@ async function getRecentNews() {
   const result = await fetch(new URL(`/api/data/ord-news`, apiUrl).toString());
   if (result.ok) {
     const infoData: KVNamespaceListResult<unknown, string> = await result.json();
-    console.log(`getRecentNews: found ${infoData.keys.length} news items from API`);
     return infoData;
   }
   console.log(`getRecentNews: ${result.status} ${result.statusText}`);
@@ -52,8 +51,6 @@ function NewsItem(props: InscriptionMeta & OrdinalNews) {
       <HStack flexWrap="wrap">
         <Text>{new Date(timestamp).toLocaleString()}</Text>
         <Text>•</Text>
-        <Text>News # 005</Text>
-        <Text>•</Text>
         <Text>Inscription # {number.toLocaleString()}</Text>
         <Text>•</Text>
         <Text>{author ? author : 'anonymous'}</Text>
@@ -62,6 +59,11 @@ function NewsItem(props: InscriptionMeta & OrdinalNews) {
     </VStack>
   );
 }
+
+/*
+<Text>•</Text>
+<Text>News # 005</Text>
+*/
 
 export default function RecentNews() {
   const [loading, setLoading] = useState(true);
