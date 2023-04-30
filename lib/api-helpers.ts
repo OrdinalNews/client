@@ -71,18 +71,8 @@ export async function getInscription(
       };
     }
   } catch (err) {
+    // TODO: throw err?
     console.log(`getInscription: unable to retrieve from V2 KV key\n${id}\n${String(err)}`);
-  }
-
-  // check for data in V1 key, store if found
-  try {
-    const kvData = await env.ORD_LIST.getWithMetadata(id, { type: 'arrayBuffer' });
-    if (kvData.metadata !== null && kvData.value !== null) {
-      metadata = kvData.metadata as InscriptionMeta;
-      content = new Response(kvData.value as ArrayBuffer);
-    }
-  } catch (err) {
-    console.log(`getInscription: unable to retrieve from V1 KV key\n${id}\n${String(err)}`);
   }
 
   // check that data was returned, fetch from Hiro API if not
