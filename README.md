@@ -4,20 +4,20 @@ This repository contains a simple web interface and API for creating, viewing, a
 
 Visit [inscribe.news](https://inscribe.news) to see it in action!
 
-## API Endpoints
+Visit the [inscribe.news documentation](https://docs.inscribe.news) to learn more about the standard!
 
-The API fetches info, content, or news from an inscription ID, grabbing the data from the [Hiro Ordinals API](https://github.com/hirosystems/ordinals-api) with either [ordapi.xyz](https://ordapi.xyz) or [ordinals.com](https://ordinals.com) as a fallback, then saving it in KV for future requests.
+## API
 
-- `/api/info/INSCRIPTION_ID` - returns inscription data (all)
-- `/api/content/INSCRIPTION_ID` - returns inscription content (all)
-- `/api/news/INSCRIPTION_ID` - returns html from news inscription body (news only)
-- `/api/data/INSCRIPTION_ID` - returns inscription data and content (news only)
-- `/api/data/ord-news` - returns all known news inscriptions in KV
-- `/api/data/ord-list` - returns all known inscriptions in KV
+The API fetches info, content, or news from an inscription ID or inscription number, and will:
+
+- first try to return the data from Cloudflare KV, if indexed
+- fetch and store the data from the [Hiro Ordinals API](https://github.com/hirosystems/ordinals-api) for future reads
+
+The available endpoints are [listed in the documentation](https://docs.inscribe.news/api).
 
 ## Development
 
-This repository can be cloned and hosted with an active Cloudflare account, using [Cloudflare Pages](https://pages.cloudflare.com/).
+This repository can be cloned and hosted with an active Cloudflare account using [Cloudflare Pages](https://pages.cloudflare.com/).
 
 To develop the site locally, run:
 
@@ -30,12 +30,16 @@ npx wrangler pages dev dist/
 To develop the site locally with KV enabled:
 
 ```
-npx wrangler pages dev --kv ORD_LIST --kv ORD_NEWS --kv ORD_DATA --local ./public ./dist
+npx wrangler pages dev --kv ORD_LIST_V2 --kv ORD_NEWS_V2 --local ./public ./dist
 ```
 
 ### Cloudflare Configuration
 
 In order to setup the same environment, a few Cloudflare settings need to be enabled on the dashboard for this Pages project.
+
+#### Link to GitHub
+
+Clone this repository and set it up within the Cloudflare Dashboard using Cloudflare Pages.
 
 #### Builds & Deployments
 
@@ -57,12 +61,10 @@ Preview:
 
 Create KV namespaces:
 
-- ord-list
-- ord-news
-- ord-data
-- ord-list-preview
-- ord-news-preview
-- ord-data-preview
+- ord-list-v2
+- ord-news-v2
+- ord-list-preview-v2
+- ord-news-preview-v2
 
 #### Functions
 
@@ -71,10 +73,8 @@ Usage model: Unbound
 KV namespace bindings:
 
 - Production:
-  - ORD_LIST = ord-list
-  - ORD_NEWS = ord-news
-  - ORD_DATA = ord-data
+  - ORD_LIST_V2 = ord-list-v2
+  - ORD_NEWS_V2 = ord-news-v2
 - Preview:
-  - ORD_LIST = ord-list-preview
-  - ORD_NEWS = ord-news-preview
-  - ORD_DATA = ord-data-preview
+  - ORD_LIST_V2 = ord-list-preview-v2
+  - ORD_NEWS_V2 = ord-news-preview-v2
