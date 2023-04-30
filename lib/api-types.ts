@@ -2,8 +2,6 @@ import { KVNamespace } from '@cloudflare/workers-types';
 
 // KV binding
 export interface Env {
-  ORD_LIST: KVNamespace;
-  ORD_NEWS: KVNamespace;
   ORD_LIST_V2: KVNamespace;
   ORD_NEWS_V2: KVNamespace;
 }
