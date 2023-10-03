@@ -48,7 +48,7 @@ export function padNumber(num: number, size = 10) {
 
 // replaces relative /content links with /api/content links
 export function replaceContentLinks(content: string) {
-  return content.replace(/\/content\//g, '/api/content/');
+  return content.replace(/="\/content\//g, '="/api/content/');
 }
 
 /////////////////////////
