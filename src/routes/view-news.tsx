@@ -12,6 +12,7 @@ import {
 } from '@chakra-ui/react';
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { replaceContentLinks } from '../../lib/api-helpers';
 import { InscriptionMeta, OrdinalNews } from '../../lib/api-types';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -244,7 +245,7 @@ export default function ViewNews() {
           />
           <ReactMarkdown
             components={ChakraUIRenderer()}
-            children={news.body}
+            children={replaceContentLinks(news.body)}
             remarkPlugins={[remarkGfm]}
             rehypePlugins={[rehypeRaw]}
             className="ord-news"
